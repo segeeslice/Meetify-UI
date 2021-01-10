@@ -11,6 +11,13 @@
     - Don't allow app interaction unless logged in
     - If "remembered", log in and greet with welcome before giving access
 1. [x] User profile area
+1. [ ] Meet area
+    1. [ ] User list
+        - Similar to SongTile
+    1. [ ] Exact song match view
+        - Floating maximizable dialog
+    1. [ ] Profile view
+        - Floating maximizable dialog
 1. [ ] Messaging area
     1. [ ] Chat selection
     1. [ ] Chat usage
@@ -28,7 +35,7 @@
 1. [ ] Other random refactors
     - Move theme injection up to index.js
     - Rename "Account" to "Profile"
-1. [ ] Fix NPM vulnerabilities and warnings
+1. [x] Fix NPM vulnerabilities and warnings
 1. [x] Fix in-house warnings (within electron console)
 1. [ ] Add react dev tools to Electron?
 1. [ ] Style management decisiosn
