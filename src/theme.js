@@ -34,6 +34,7 @@ const theme = createMuiTheme({
   },
   images: {
     squareImageHeight: '150px',
+    cardImageHeight: '100px',
   },
 })
 
