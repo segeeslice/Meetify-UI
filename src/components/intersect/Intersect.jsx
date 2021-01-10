@@ -58,7 +58,7 @@ export default function Intersect (props) {
           <SongTile
             key={index}
             song={row.song}
-            artist={row.song}
+            artist={row.artist}
             album={row.album}
             albumArtUrl={row.albumArtUrl}
           />

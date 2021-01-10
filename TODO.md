@@ -14,6 +14,9 @@
 1. [ ] Messaging area
     1. [ ] Chat selection
     1. [ ] Chat usage
+    
+## Design refine
+1. [ ] Make song tiles smaller & exclude album
 
 ## Boilerplate & Administrative
 1. [x] Investigate Typescript integration
