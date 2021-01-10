@@ -1,9 +1,12 @@
 # Meetify Front-end
 
-This directory contains all the code for the **front-end** application(s) for
-interacting with the various Meetify services.
-
 **Current version:** 0.1.0
+
+This repository contains all the code for the **front-end** application(s) for
+interacting with the online services of the Meetify project.
+
+*(For the back-end code and further details on the Meetify project, see the
+[Meetify repository](https://github.com/RobBoeckermann/Meetify))*
 
 ## Technical Overview
 
