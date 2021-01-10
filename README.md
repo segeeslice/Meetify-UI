@@ -3,7 +3,7 @@
 This directory contains all the code for the **front-end** application(s) for
 interacting with the various Meetify services.
 
-**Current version:** 0.0.0
+**Current version:** 0.1.0
 
 ## Technical Overview
 
