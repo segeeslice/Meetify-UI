@@ -17,33 +17,51 @@ import {
   Typography,
 } from '@material-ui/core'
 
-import { theme } from '../theme'
+import { makeStyles } from '@material-ui/core/styles'
+
+const useStyles = makeStyles((theme) => ({
+  root: {
+    display: 'flex',
+    margin: '8px',
+  },
+  media: {
+    // Must both be specified to size properly
+    height: theme.images.squareImageHeight,
+    width: theme.images.squareImageHeight,
+  },
+  contents: {
+    height: theme.images.squareImageHeight,
+    display: 'flex',
+    alignItems: 'center',
+  },
+  subText: {
+    color: theme.palette.text.secondary
+  }
+}))
 
 export default function SongTile (props) {
-  const albumArtSize = theme.images.squareImageHeight
-  const metaTextColor = theme.palette.text.secondary
+  const classes = useStyles()
 
   return (
-    <Card style={{display: 'flex', margin: '8px'}} raised>
+    <Card className={classes.root} raised>
       {/*Album Art*/}
       <CardMedia
         image={props.albumArtUrl}
         title={props.album + ' album cover'}
-        // Must both be specified to size properly
-        style={{height: albumArtSize, width: albumArtSize}}
+        className={classes.media}
       />
 
       {/*Song detail display*/}
-      <div style={{height: albumArtSize, display: 'flex', alignItems: 'center'}}>
+      <div className={classes.contents}>
         {/* TODO: Horizontal-scroll if too long */}
         <CardContent>
           <Typography variant="h6">
             {props.song}
           </Typography>
-          <Typography variant="subtitle1" style={{color: metaTextColor}}>
+          <Typography variant="subtitle1" className={classes.subText}>
             {props.artist}
           </Typography>
-          <Typography variant="caption" style={{color: metaTextColor}}>
+          <Typography variant="caption" className={classes.subText}>
             {props.album}
           </Typography>
         </CardContent>
