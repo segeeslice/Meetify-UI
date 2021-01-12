@@ -6,6 +6,8 @@
  *   - artist      (String)
  *   - album       (String)
  *   - albumArtUrl (String)
+ *
+ * ^ If any are not included, it will simply be excluded from display
  */
 
 import React from 'react';
@@ -22,21 +24,21 @@ import { makeStyles } from '@material-ui/core/styles'
 const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',
-    margin: '8px',
+    height: '100%',
+    width: '100%',
   },
   media: {
-    // Must both be specified to size properly
-    height: theme.images.squareImageHeight,
-    width: theme.images.squareImageHeight,
+    height: '100%',
+    width: 'auto'
   },
   contents: {
-    height: theme.images.squareImageHeight,
+    height: '100%',
     display: 'flex',
     alignItems: 'center',
   },
   subText: {
     color: theme.palette.text.secondary
-  }
+  },
 }))
 
 export default function SongTile (props) {
@@ -49,6 +51,7 @@ export default function SongTile (props) {
         image={props.albumArtUrl}
         title={props.album + ' album cover'}
         className={classes.media}
+        component="img"
       />
 
       {/*Song detail display*/}
