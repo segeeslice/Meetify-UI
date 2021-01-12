@@ -6,7 +6,7 @@
  * Sends to state.meet
  */
 
-import { createSlice } from '@reduxjs/toolkit'
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 
 // Temporary test matched users
 const TEST_USERS = [{
@@ -23,7 +23,15 @@ const TEST_USERS = [{
   songsMatched: 5,
 }]
 
-export const meetSlice = createSlice({
+const findMatches = createAsyncThunk(
+  'meet/findMatchesStatus',
+  async ({ username }, thunkAPI) => {
+    // For now, just return test data after a pause
+    return new Promise(resolve => setTimeout(() => resolve(TEST_USERS), 2000))
+  }
+)
+
+const meetSlice = createSlice({
   name: 'meet',
   initialState: {
     // Array of dicts containing { displayname, profilePicUrl, songsMatched }
@@ -33,15 +41,18 @@ export const meetSlice = createSlice({
     setMatches: (state, action) => {
       state.matches = action.payload
     },
-    // TODO: Make async
-    findMatches: (state, action) => {
-      // const { username } = action.payload
-
-      // NOTE: Just use test data for now
-      state.matches = TEST_USERS
-    }
+    clearMatches: state => {
+      state.matches = []
+    },
+  },
+  extraReducers: {
+    // When findMatches succeeds, do this with the result...
+    [findMatches.fulfilled]: (state, action) => {
+      state.matches = action.payload
+    },
   }
 })
 
-export const { setMatches, findMatches } = meetSlice.actions
+export { meetSlice, findMatches }
+export const { setMatches, clearMatches } = meetSlice.actions
 export default meetSlice.reducer

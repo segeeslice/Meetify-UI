@@ -4,6 +4,8 @@
  */
 
 import { configureStore } from '@reduxjs/toolkit'
+import thunk from 'redux-thunk' // Allows for asynchronous dispatches
+
 import accountReducer from './components/account/accountSlice'
 import intersectReducer from './components/intersect/intersectSlice'
 import meetReducer from './components/meet/meetSlice'
@@ -13,5 +15,6 @@ export default configureStore({
     account: accountReducer,
     intersect: intersectReducer,
     meet: meetReducer,
-  }
+  },
+  middleware: [thunk],
 })

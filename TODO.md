@@ -21,6 +21,7 @@
 1. [ ] Messaging area
     1. [ ] Chat selection
     1. [ ] Chat usage
+1. [ ] General alert
     
 ## Design refine
 1. [ ] Make song tiles smaller & exclude album

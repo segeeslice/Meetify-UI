@@ -5,7 +5,8 @@
 
 import React, { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { findMatches } from './meetSlice'
+import { unwrapResult } from '@reduxjs/toolkit'
+import { findMatches, clearMatches } from './meetSlice'
 
 import { makeStyles } from '@material-ui/core/styles'
 
@@ -63,18 +64,38 @@ export default function Meet () {
   useEffect(() => (clearTimeout(timeout)))
 
   function handleClick () {
-    // Temporarily just swap after some delays
+    // Change UI to indicate loading
     setButtonDisabled(true)
     setSearching(true)
-    timeout = setTimeout(() => {
-      setSearching(false)
-      dispatch(findMatches({username: currentUser}))
-      setSuccess(true)
-      timeout = setTimeout(() => {
-        setShowMatches(true)
+
+    // Find matches from server and handle accordingly
+    dispatch(findMatches({ username: currentUser }))
+      .then(unwrapResult)
+      .then(async (matches) => {
+        setSearching(false)
+
+        if (matches && matches.length > 0) {
+          setSuccess(true)
+
+          // Run success animation before showing matches
+          timeout = setTimeout(() => {
+            setShowMatches(true)
+            setSuccess(false)
+            setButtonDisabled(false)
+          }, 2000)
+
+        } else throw Error("No matches found.")
+
+      }).catch((err) => {
+        setSearching(false)
+        console.error("Error in finding matches", err)
+
+        // TODO: Display error alert with more details
+        setShowMatches(false)
+        setSuccess(false)
         setButtonDisabled(false)
-      }, 2000)
-    }, 2000)
+        dispatch(clearMatches())
+      })
   }
 
   // TODO: Put this logic into a re-usable component
