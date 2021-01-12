@@ -6,23 +6,31 @@
  * If no display name, defaults to a basic profile picture
  *
  * Props:
- * - src (String) = image URL of the profile picture
  * - displayName (String) = display name of the user
+ * - src (String) = image URL of the profile picture (should be square!)
+ * - All other props for the Avatar component
  */
 
 import React from 'react'
 import { Avatar } from '@material-ui/core'
 
 export default function UserAvatar (props) {
-  if (!props) {
-    return <Avatar/>
+  if (!props) props = {}
 
-  } else if (props.displayName) {
-    const { displayName, ...avatarProps } = props
-    const firstLetter = displayName[0].toUpperCase()
-    return <Avatar {...avatarProps}>{firstLetter}</Avatar>
+  // Pull out className for application to base img object within Avatar
+  // This allows for app to automatically figure out width based on image height
+  // NOTE: The intended look relies on a given src and a square image
+  //       If we want to support tiles having letters and defaults, we need to
+  //       Hard-code heights and widths somewhere.
+  const { className } = props
+  const imgProps = className ? {className} : {}
 
-  } else {
-    return <Avatar {...props}/>
-  }
+  const { displayName, ...avatarProps } = props
+  const firstLetter = displayName ? displayName[0].toUpperCase() : undefined
+
+  return (
+    <Avatar {...avatarProps} imgProps={imgProps}>
+      {firstLetter}
+    </Avatar>
+  )
 }

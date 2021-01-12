@@ -17,15 +17,15 @@ import MeetCard from './MeetCard'
 
 const TEST_USERS = [{
   displayName: 'Dougy doug',
-  profilePicUrl: 'https://wi-images.condecdn.net/image/jgov7eBrRvb/crop/2040/f/6-facial-recognition-hero.jpg',
+  profilePicUrl: 'https:2x1dks3q6aoj44bz1r1tr92f-wpengine.netdna-ssl.com/wp-content/uploads/2017/05/Square-face-shape-bespke-unit-Bordered-700x700.png',
   songsMatched: 27,
 },{
   displayName: 'Dougina Dougette',
-  profilePicUrl: 'https://www.4dface.io/wp-content/uploads/2018/10/4DFM_sample2.jpg',
+  profilePicUrl: 'https://cdn.shopify.com/s/files/1/2979/1564/files/Square_Final_large.png?v=1535503211',
   songsMatched: 57,
 }, {
   displayName: 'Dougronamopolis Jr. doug',
-  profilePicUrl: 'https://www.cbc.ca/natureofthings/content/legacy/Universal_Expression_Surprise.jpg',
+  profilePicUrl: 'https://media.allure.com/photos/5771a6723b5256713da4b855/1:1/w_400%2Cc_limit/hair-ideas-2012-05-square-face-hairstyles-olivia-wilde.jpg',
   songsMatched: 5,
 }]
 
@@ -48,7 +48,12 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     height: '100%',
     width: '100%',
-  }
+  },
+  tile: {
+    height: theme.tile.height,
+    width: '100%',
+    padding: '8px',
+  },
 }))
 
 export default function Meet () {
@@ -121,7 +126,7 @@ export default function Meet () {
     .sort((a, b) => b.songsMatched-a.songsMatched)
     .map((o, i) => {
       return (
-        <div style={{margin: '8px'}} key={i}>
+        <div className={classes.tile} key={i}>
           <MeetCard {...o}/>
         </div>
       )

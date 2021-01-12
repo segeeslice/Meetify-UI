@@ -7,7 +7,8 @@
  *   - songsMatched (int)
  */
 
-import React from 'react';
+import React from 'react'
+import { makeStyles } from '@material-ui/core/styles'
 
 import {
   Card,
@@ -17,24 +18,43 @@ import {
 } from '@material-ui/core'
 import UserAvatar from '../UserAvatar'
 
-import './MeetCard.css'
-import { theme } from '../../theme'
+const useStyles = makeStyles((theme) => ({
+  root: {
+    display: 'flex',
+    height: '100%',
+    width: '100%',
+  },
+  media: {
+    height: '100%',
+    padding: '8px',
+    display: 'flex',
+    alignItems: 'center',
+  },
+  avatar: {
+    height: '100%',
+    width: 'auto'
+  },
+  contents: {
+    display: 'flex',
+    alignItems: 'center'
+  }
+}))
 
 export default function MeetCard (props) {
-  const avatarSize = theme.images.cardImageHeight
+  const classes = useStyles()
 
   return (
     // TODO: Possibly make common component between this and SongTile for alignment?
-    <Card className="meet-card-container" raised>
-      <CardMedia style={{padding: '8px'}}>
+    <Card className={classes.root} raised>
+      <CardMedia className={classes.media}>
         <UserAvatar
           src={props.profilePicUrl}
           displayName={props.displayName}
-          style={{height: avatarSize, width: avatarSize}}
+          className={classes.avatar}
         />
       </CardMedia>
 
-      <div style={{display: 'flex', alignItems: 'center'}}>
+      <div className={classes.contents}>
         <CardContent>
           <Typography variant="h6">
             {props.displayName || '(no display name)'}
