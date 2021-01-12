@@ -4,6 +4,9 @@
  */
 
 import React, { useState, useEffect } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
+import { findMatches } from './meetSlice'
+
 import { makeStyles } from '@material-ui/core/styles'
 
 import {
@@ -14,20 +17,6 @@ import {
 } from '@material-ui/core'
 import { Check } from '@material-ui/icons'
 import MeetCard from './MeetCard'
-
-const TEST_USERS = [{
-  displayName: 'Dougy doug',
-  profilePicUrl: 'https:2x1dks3q6aoj44bz1r1tr92f-wpengine.netdna-ssl.com/wp-content/uploads/2017/05/Square-face-shape-bespke-unit-Bordered-700x700.png',
-  songsMatched: 27,
-},{
-  displayName: 'Dougina Dougette',
-  profilePicUrl: 'https://cdn.shopify.com/s/files/1/2979/1564/files/Square_Final_large.png?v=1535503211',
-  songsMatched: 57,
-}, {
-  displayName: 'Dougronamopolis Jr. doug',
-  profilePicUrl: 'https://media.allure.com/photos/5771a6723b5256713da4b855/1:1/w_400%2Cc_limit/hair-ideas-2012-05-square-face-hairstyles-olivia-wilde.jpg',
-  songsMatched: 5,
-}]
 
 const BUTTON_HEIGHT = 70
 const PROGRESS_HEIGHT = BUTTON_HEIGHT / 1.5
@@ -57,10 +46,14 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 export default function Meet () {
-  // TODO: Move to store
   const classes = useStyles()
-  const [matches, setMatches] = useState([])
-  const [showMatches, setShowMatches] = useState(false)
+  const dispatch = useDispatch()
+  const matches = useSelector(state => state.meet.matches)
+  const currentUser = useSelector(state => state.account.username)
+
+  const matchesPresent = matches && matches.length > 0
+  const [showMatches, setShowMatches] = useState(matchesPresent)
+
   const [searching, setSearching] = useState(false)
   const [buttonDisabled, setButtonDisabled] = useState(false)
   const [success, setSuccess] = useState(false)
@@ -69,13 +62,13 @@ export default function Meet () {
 
   useEffect(() => (clearTimeout(timeout)))
 
-  function findMatches () {
+  function handleClick () {
     // Temporarily just swap after some delays
     setButtonDisabled(true)
     setSearching(true)
     timeout = setTimeout(() => {
       setSearching(false)
-      setMatches(TEST_USERS)
+      dispatch(findMatches({username: currentUser}))
       setSuccess(true)
       timeout = setTimeout(() => {
         setShowMatches(true)
@@ -99,7 +92,7 @@ export default function Meet () {
           size="large"
           color="primary"
           disabled={buttonDisabled}
-          onClick={() => findMatches()}
+          onClick={() => handleClick()}
         >
           <Typography variant="h4">
             Meetify!
