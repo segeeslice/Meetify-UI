@@ -137,7 +137,7 @@ export default function Meet () {
 
   // TODO: Start with primary background gradient and slowly reduce opacity down list
   const meetCards = [...matches]
-    .sort((a, b) => b.songsMatched-a.songsMatched)
+    .sort((a, b) => b.songs.length-a.songs.length)
     .map((o, i) => {
       return (
         <div className={classes.tile} key={i}>

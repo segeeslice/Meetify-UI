@@ -60,7 +60,7 @@ export default function MeetCard (props) {
             {props.displayName || '(no display name)'}
           </Typography>
           <Typography variant="subtitle2">
-            Matching songs: {props.songsMatched || 0}
+            Matching songs: {props.songs.length || 0}
           </Typography>
         </CardContent>
       </div>

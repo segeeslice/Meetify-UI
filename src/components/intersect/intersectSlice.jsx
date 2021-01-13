@@ -9,7 +9,7 @@
 // import { getPlaylistIntersect } from './server';
 
 import { createSlice } from '@reduxjs/toolkit'
-const TEST_SONG_DATA = [
+export const TEST_SONG_DATA = [
   {
     song: 'Welcome to the Black Parade',
     artist: 'My Chemical Romance',
