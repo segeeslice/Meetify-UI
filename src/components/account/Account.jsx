@@ -1,6 +1,10 @@
 /*
  * UI component for viewing logged-in account details
- * Accesses data from state.account, which should be set upon login
+ *
+ * Props:
+ * - username (String) = username of user's profile
+ * - profile (obj) = { displayName, status, description }
+ *   - (TODO: This should probably be a defined class)
  *
  * TODO: Should rename to "Profile", which is more accurate
  *       Separate "Account" section should more be settings & logistics
@@ -8,7 +12,6 @@
  */
 
 import React from 'react'
-import { useSelector } from 'react-redux'
 import {
   Card,
   CardMedia,
@@ -35,8 +38,7 @@ const PROFILE_IMG_SIZE = theme.images.squareImageHeight
 
 // TODO: Rename to Profile (account settings could & should be separate!)
 export default function Account (props) {
-  const username = useSelector((state) => state.account.username)
-  const profile = useSelector((state) => state.account.profile)
+  const {username, profile} = props
 
   const Header = (() => (
     <Card style={{width: '100%', background: HEADER_GRADIENT}}>

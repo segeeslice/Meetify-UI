@@ -20,23 +20,27 @@ import './App.css'
 
 const TRANSITION_DURATION = 500
 
-const TAB_CONFIG = [{
-  label: 'Meet',
-  val: 'meet',
-  component: <Meet/>,
-}, {
-  label: 'Intersect',
-  val: 'intersect',
-  component: <Intersect/>,
-}, {
-  label: 'Account',
-  val: 'account',
-  component: <Account/>,
-}];
-const TAB_DEFAULT = TAB_CONFIG[0].val
-
 export default function App () {
   const loggedIn = useSelector((state) => state.account.loggedIn)
+  const username = useSelector((state) => state.account.username)
+  const profile = useSelector((state) => state.account.profile)
+
+  const TAB_CONFIG = [{
+    label: 'Meet',
+    val: 'meet',
+    component: <Meet/>,
+  }, {
+    label: 'Intersect',
+    val: 'intersect',
+    component: <Intersect/>,
+  }, {
+    label: 'Account',
+    val: 'account',
+    component: <Account username={username} profile={profile}/>,
+  }];
+
+  const TAB_DEFAULT = TAB_CONFIG[0].val
+
   const [activeTab, setActiveTab] = useState(TAB_DEFAULT)
 
   const getActiveComponent = () => TAB_CONFIG.find(x => x.val === activeTab).component
