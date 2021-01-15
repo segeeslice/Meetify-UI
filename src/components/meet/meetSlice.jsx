@@ -11,17 +11,29 @@ import { TEST_SONG_DATA } from '../intersect/intersectSlice'
 
 // Temporary test matched users
 const TEST_USERS = [{
-  displayName: 'Dougy doug',
-  profilePicUrl: 'https:2x1dks3q6aoj44bz1r1tr92f-wpengine.netdna-ssl.com/wp-content/uploads/2017/05/Square-face-shape-bespke-unit-Bordered-700x700.png',
+  profile: {
+    displayName: 'Dougy doug',
+    profilePicUrl: 'https:2x1dks3q6aoj44bz1r1tr92f-wpengine.netdna-ssl.com/wp-content/uploads/2017/05/Square-face-shape-bespke-unit-Bordered-700x700.png',
+    description: 'Dougy doug living in a dougy dog wourld',
+  },
   songs: TEST_SONG_DATA.concat(TEST_SONG_DATA),
+  username: 'dougy-doug',
 },{
-  displayName: 'Dougina Dougette',
-  profilePicUrl: 'https://cdn.shopify.com/s/files/1/2979/1564/files/Square_Final_large.png?v=1535503211',
+  profile: {
+    displayName: 'Dougina Dougette',
+    profilePicUrl: 'https://cdn.shopify.com/s/files/1/2979/1564/files/Square_Final_large.png?v=1535503211',
+    description: 'Hello am Dougina, but you can call me Doug',
+  },
   songs: TEST_SONG_DATA.concat(TEST_SONG_DATA).concat(TEST_SONG_DATA).concat(TEST_SONG_DATA),
+  username: 'dougette-rules-3000',
 }, {
-  displayName: 'Dougronamopolis Jr. doug',
-  profilePicUrl: 'https://media.allure.com/photos/5771a6723b5256713da4b855/1:1/w_400%2Cc_limit/hair-ideas-2012-05-square-face-hairstyles-olivia-wilde.jpg',
+  profile: {
+    displayName: 'Dougronamopolis Jr. doug',
+    profilePicUrl: 'https://media.allure.com/photos/5771a6723b5256713da4b855/1:1/w_400%2Cc_limit/hair-ideas-2012-05-square-face-hairstyles-olivia-wilde.jpg',
+    description: 'Top of the morning to you, laddie. -Doug',
+  },
   songs: TEST_SONG_DATA,
+  username: 'pish-posh-doug-sauce',
 }]
 
 const findMatches = createAsyncThunk(
