@@ -3,34 +3,45 @@
  */
 
 import React, { useState, useRef } from 'react'
-import { CSSTransition } from 'react-transition-group';
+import { CSSTransition } from 'react-transition-group'
 import { Tab, Paper } from '@material-ui/core'
 import { ThemeProvider } from '@material-ui/core/styles'
 import { useSelector } from 'react-redux'
 
 import VerticalTabBar from './VerticalTabBar'
 import Login from './account/Login'
-import Account from './account/Account'
+
+import Meet from './meet/Meet'
 import Intersect from './intersect/Intersect'
+import Account from './account/Account'
 
 import { theme } from '../theme'
 import './App.css'
 
 const TRANSITION_DURATION = 500
 
-const TAB_CONFIG = [{
-  label: 'Intersect',
-  val: 'intersect',
-  component: <Intersect/>,
-}, {
-  label: 'Account',
-  val: 'account',
-  component: <Account/>,
-}];
-
 export default function App () {
   const loggedIn = useSelector((state) => state.account.loggedIn)
-  const [activeTab, setActiveTab] = useState('intersect')
+  const username = useSelector((state) => state.account.username)
+  const profile = useSelector((state) => state.account.profile)
+
+  const TAB_CONFIG = [{
+    label: 'Meet',
+    val: 'meet',
+    component: <Meet/>,
+  }, {
+    label: 'Intersect',
+    val: 'intersect',
+    component: <Intersect/>,
+  }, {
+    label: 'Account',
+    val: 'account',
+    component: <Account username={username} profile={profile}/>,
+  }];
+
+  const TAB_DEFAULT = TAB_CONFIG[0].val
+
+  const [activeTab, setActiveTab] = useState(TAB_DEFAULT)
 
   const getActiveComponent = () => TAB_CONFIG.find(x => x.val === activeTab).component
   const getActiveComponentIndex = () => TAB_CONFIG.findIndex(x => x.val === activeTab)

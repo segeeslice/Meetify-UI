@@ -11,12 +11,23 @@
     - Don't allow app interaction unless logged in
     - If "remembered", log in and greet with welcome before giving access
 1. [x] User profile area
+1. [x] Meet area
+    1. [x] User list
+        - Similar to SongTile
+    1. [ ] Exact song match view
+        x Floating maximizable dialog
+    1. [x] Profile view
+        - Floating maximizable dialog
 1. [ ] Messaging area
     1. [ ] Chat selection
     1. [ ] Chat usage
+1. [ ] General alert for errors
     
 ## Design refine
-1. [ ] Make song tiles smaller & exclude album
+1. [x] Make song tiles smaller & exclude album
+1. [ ] Redesign meet area to use "generic" material cards
+1. [ ] Make song tiles clickable
+1. [ ] Make profile page use avatars
 
 ## Boilerplate & Administrative
 1. [x] Investigate Typescript integration
@@ -24,14 +35,14 @@
 1. [x] Investigate Redux integration prior to back-end connection
     - Would help manage data, should app components become "far-reaching"
     - Main drawback is the initial setup, but should be worht it in the long run
-1. [ ] Better organize files
+1. [x] Better organize files
 1. [ ] Other random refactors
     - Move theme injection up to index.js
     - Rename "Account" to "Profile"
-1. [ ] Fix NPM vulnerabilities and warnings
+1. [x] Fix NPM vulnerabilities and warnings
 1. [x] Fix in-house warnings (within electron console)
 1. [ ] Add react dev tools to Electron?
-1. [ ] Style management decisiosn
+1. [ ] Style management decision
     1. [ ] Find a way to default most components to w/h 100% and style further
            using layout wrappers, allowing for better reusability
     1. [ ] Investigate integrating [CSS

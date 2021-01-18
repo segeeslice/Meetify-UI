@@ -32,8 +32,12 @@ const theme = createMuiTheme({
       contrastText: '#000',
     },
   },
+  tile: {
+    height: '135px',
+  },
   images: {
     squareImageHeight: '150px',
+    cardImageHeight: '100px',
   },
 })
 
