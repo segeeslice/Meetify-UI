@@ -14,6 +14,7 @@ import Login from './account/Login'
 import Meet from './meet/Meet'
 import Intersect from './intersect/Intersect'
 import Account from './account/Account'
+import Chat from './chat/Chat'
 
 import { theme } from '../theme'
 import './App.css'
@@ -37,6 +38,10 @@ export default function App () {
     label: 'Account',
     val: 'account',
     component: <Account username={username} profile={profile}/>,
+  }, {
+    label: 'Chat',
+    val: 'chat',
+    component: <Chat/>
   }];
 
   const TAB_DEFAULT = TAB_CONFIG[0].val

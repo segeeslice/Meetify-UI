@@ -10,7 +10,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import { TEST_SONG_DATA } from '../intersect/intersectSlice'
 
 // Temporary test matched users
-const TEST_USERS = [{
+export const TEST_USERS = [{
   profile: {
     displayName: 'Dougy doug',
     profilePicUrl: 'https:2x1dks3q6aoj44bz1r1tr92f-wpengine.netdna-ssl.com/wp-content/uploads/2017/05/Square-face-shape-bespke-unit-Bordered-700x700.png',
