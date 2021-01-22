@@ -1,9 +1,9 @@
 
 /*
- * Redux slice for containing data for the Chat tab
+ * Redux slice for containing data for the Matches tab
  * (NOTE: Currently just uses test data)
  *
- * Sends to state.chat
+ * Sends to state.matches
  */
 
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
@@ -14,27 +14,27 @@ import { TEST_USERS } from '../meet/meetSlice'
 const TEST_MESSAGES = [
   {
     sender: 'other', // Injected soon
-    date: Date(Date.now() - 15000),
+    date: new Date(Date.now() - 15000),
     text: 'Hey!'
   },
   {
     sender: 'me',
-    date: Date(Date.now() - 10000),
+    date: new Date(Date.now() - 10000),
     text: 'Hey man what\'s up?',
   },
   {
     sender: 'other',
-    date: Date(Date.now() - 5000),
+    date: new Date(Date.now() - 5000),
     text: 'Please leave me alone I am sleepin',
   },
   {
     sender: 'me',
-    date: Date(Date.now() - 2000),
+    date: new Date(Date.now() - 2000),
     text: 'What?',
   },
   {
     sender: 'other',
-    date: Date(Date.now()),
+    date: new Date(Date.now()),
     text: 'I SAID I\'M NO LONGER INTERESTED. PLEASE STOP CONTACTING ME OR I WILL CONTACT ATTORNEY GENERAL. THZSKS',
   },
 ]
@@ -47,8 +47,9 @@ const getTestChat = ({ userObj, me}) => {
   return Object.assign({}, userObj, { messages })
 }
 
-const loadChats = createAsyncThunk(
-  'meet/loadChatsStatus',
+// TODO: Rename
+const loadMatches = createAsyncThunk(
+  'meet/loadMatchesStatus',
   async ({ username }, thunkAPI) => {
     // For now, just return test data after a pause
     return new Promise(resolve => setTimeout(() => {
@@ -58,28 +59,28 @@ const loadChats = createAsyncThunk(
   }
 )
 
-const chatSlice = createSlice({
-  name: 'chat',
+const matchesSlice = createSlice({
+  name: 'matches',
   initialState: {
     // Array of dicts containing { displayname, profilePicUrl, songsMatched }
-    chats: []
+    matches: []
   },
   reducers: {
     setMatches: (state, action) => {
-      state.chats = action.payload
+      state.matches = action.payload
     },
     clearMatches: state => {
-      state.chats = []
+      state.matches = []
     },
   },
   extraReducers: {
     // When findMatches succeeds, do this with the result...
-    [loadChats.fulfilled]: (state, action) => {
-      state.chats = action.payload
+    [loadMatches.fulfilled]: (state, action) => {
+      state.matches = action.payload
     },
   }
 })
 
-export { chatSlice, loadChats }
-export const { setMatches, clearMatches } = chatSlice.actions
-export default chatSlice.reducer
+export { matchesSlice, loadMatches }
+export const { setMatches, clearMatches } = matchesSlice.actions
+export default matchesSlice.reducer
