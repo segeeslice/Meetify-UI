@@ -14,13 +14,27 @@ import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 
 import ChatBubble from './ChatBubble'
+import ChatInput from './ChatInput'
 
 const useStyles = makeStyles((theme) => ({
   root: {
+    width: '100%',
+    height: '100%',
     display: 'flex',
+    flexDirection: 'column-reverse',
+    position: 'relative',
+  },
+  inputContainer: {
+    width: '100%',
+  },
+  chatContainer: {
+    display: 'flex',
+    flexGrow: 1,
     width: '100%',
     height: '100%',
     flexDirection: 'column',
+    overflow: 'auto', // TODO: Make scrollbar look prettier?
+    marginBottom: theme.spacing(1)
   },
   chat: {
     display: 'flex',
@@ -42,12 +56,16 @@ export default function ChatView (props) {
   const classes = useStyles()
 
   const {
-    messages,
-    rightSender,
+    otherUser
   } = props
 
+  const { messages } = otherUser
+
+  const otherUserFirstName = otherUser.profile.displayName.split(' ')[0]
+  const inputPlaceholder = `Message ${otherUserFirstName}`
+
   const chats = messages.map((m, i) => {
-    const otherUserSent = m.sender === rightSender
+    const otherUserSent = m.sender === otherUser.username
     const directionClass = otherUserSent ? classes.chatLeft : classes.chatRight
     const color = otherUserSent ? 'secondary' : 'primary'
 
@@ -68,7 +86,14 @@ export default function ChatView (props) {
 
   return (
     <div className={classes.root}>
-      {chats}
+      <div className={classes.inputContainer}>
+        <ChatInput
+          placeholder={inputPlaceholder}
+        />
+      </div>
+      <div className={classes.chatContainer}>
+        {chats}
+      </div>
     </div>
   )
 }

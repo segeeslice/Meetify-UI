@@ -30,6 +30,7 @@ const useStyles = makeStyles((theme) => ({
   contents: {
     padding: theme.spacing(3),
     paddingTop: 60 + theme.spacing(3),
+    height: '100%',
   },
   appBar: {
     position: 'absolute',
@@ -63,8 +64,7 @@ export default function UserView (props) {
 
       <div className={classes.contents}>
         <ChatView
-          messages={user.messages}
-          rightSender={user.username}
+          otherUser={user}
         />
       </div>
     </Paper>
