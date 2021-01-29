@@ -47,9 +47,8 @@ const getTestChat = ({ userObj, me}) => {
   return Object.assign({}, userObj, { messages })
 }
 
-// TODO: Rename
 const loadMatches = createAsyncThunk(
-  'meet/loadMatchesStatus',
+  'matches/loadMatchesStatus',
   async ({ username }, thunkAPI) => {
     // For now, just return test data after a pause
     return new Promise(resolve => setTimeout(() => {

@@ -54,9 +54,8 @@ const useStyles = makeStyles((theme) => ({
 
 export default function ChatView (props) {
   const classes = useStyles()
-
   const {
-    otherUser
+    otherUser,
   } = props
 
   const { messages } = otherUser
@@ -89,6 +88,7 @@ export default function ChatView (props) {
       <div className={classes.inputContainer}>
         <ChatInput
           placeholder={inputPlaceholder}
+          userTo={otherUser.username}
         />
       </div>
       <div className={classes.chatContainer}>
