@@ -3,15 +3,17 @@
  * Contains 3 actionable areas:
  * - "close" button
  * - "songs" button
- * - "chat" button
+ * - "action" button (variant chat or add person button)
  * - "profile" action area
  *
  * However, event handling must be controlled from parent
  *
  * props:
- * - disableCloseButton, disableSongsButton, disableChatButton
+ * - closeButtonDisabled, songButtonDisabled, actionButtonDisabled
  *     - [Boolean] if true, respective button is grayed and cannot be clicked
- * - onCloseClick, onSongsClick, onChatClick, onProfileClick
+ * - actionButtonIcon
+ *     - [React component] Material UI icon to display for the action button
+ * - onCloseClick, onSongsClick, onActionClick, onProfileClick
  *     - [function] method to call upon clicking that particular area
  *
  */
@@ -28,7 +30,6 @@ import {
 } from '@material-ui/core'
 
 import CloseIcon from '@material-ui/icons/Close'
-import ChatIcon from '@material-ui/icons/Chat'
 import SongsIcon from '@material-ui/icons/LibraryMusic'
 
 import UserAvatar from './UserAvatar'
@@ -55,9 +56,10 @@ function UserTileActions(props) {
   const classes = useStyles()
 
   const {
-    disableCloseButton, onCloseClick,
-    disableSongsButton, onSongsClick,
-    disableChatButton, onChatClick,
+    closeButtonDisabled, onCloseClick,
+    songButtonDisabled, onSongsClick,
+    actionButtonDisabled, onActionClick,
+    actionButtonIcon,
   } = props
 
   return (
@@ -65,22 +67,22 @@ function UserTileActions(props) {
       <IconButton
         className={classes.closeButton}
         onClick={onCloseClick}
-        disabled={disableCloseButton}
+        disabled={closeButtonDisabled}
       >
         <CloseIcon/>
       </IconButton>
       <IconButton
         onClick={onSongsClick}
-        disabled={disableSongsButton}
+        disabled={songButtonDisabled}
       >
         <SongsIcon/>
       </IconButton>
       <IconButton
         color="primary"
-        onClick={onChatClick}
-        disabled={disableChatButton}
+        onClick={onActionClick}
+        disabled={actionButtonDisabled}
       >
-        <ChatIcon/>
+        {actionButtonIcon}
       </IconButton>
     </CardActions>
   )
@@ -93,18 +95,20 @@ export default function UserTile (props) {
 
   const {
     user,
-    disableCloseButton, onCloseClick,
-    disableSongsButton, onSongsClick,
-    disableChatButton, onChatClick,
+    closeButtonDisabled, onCloseClick,
+    songButtonDisabled, onSongsClick,
+    actionButtonDisabled, onActionClick,
+    actionButtonIcon,
     onProfileClick,
     className,
     ...cardProps
   } = props
 
   const actionAreaProps = {
-    disableCloseButton, onCloseClick,
-    disableSongsButton, onSongsClick,
-    disableChatButton, onChatClick,
+    closeButtonDisabled, onCloseClick,
+    songButtonDisabled, onSongsClick,
+    actionButtonDisabled, onActionClick, // TODO: Refactor to "actionButton" with variant icons
+    actionButtonIcon,
   }
 
   // TODO: Use memoize to possibly remedy performance issues

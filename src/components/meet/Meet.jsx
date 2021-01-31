@@ -17,7 +17,8 @@ import {
   Typography,
 } from '@material-ui/core'
 import { Check } from '@material-ui/icons'
-import MeetCard from './MeetCard'
+
+import MatchesView from '../matches/MatchesView'
 
 const BUTTON_HEIGHT = 70
 const PROGRESS_HEIGHT = BUTTON_HEIGHT / 1.5
@@ -63,7 +64,7 @@ export default function Meet () {
 
   useEffect(() => (clearTimeout(timeout)))
 
-  function handleClick () {
+  function onRefreshClick () {
     // Change UI to indicate loading
     setButtonDisabled(true)
     setSearching(true)
@@ -113,7 +114,7 @@ export default function Meet () {
           size="large"
           color="primary"
           disabled={buttonDisabled}
-          onClick={() => handleClick()}
+          onClick={onRefreshClick}
         >
           <Typography variant="h4">
             Meetify!
@@ -135,18 +136,16 @@ export default function Meet () {
     </div>
   )
 
-  // TODO: Start with primary background gradient and slowly reduce opacity down list
-  const meetCards = [...matches]
-    .sort((a, b) => b.songs.length-a.songs.length)
-    .map((o, i) => {
-      return (
-        <div className={classes.tile} key={i}>
-          <MeetCard {...o}/>
-        </div>
-      )
-  })
-
+  const meetView = (
+    <MatchesView
+      inMeetMode
+      matches={matches}
+      loading={searching}
+      onRefreshClick={onRefreshClick} // TODO
+      onCloseClick={() => {}}   // TODO
+    />
+  )
   // TODO: Add fade animation between these, possibly put into generic component first
-  if (showMatches) return meetCards
+  if (showMatches) return meetView
   else return initComp
 }
