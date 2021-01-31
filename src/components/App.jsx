@@ -39,8 +39,8 @@ export default function App () {
     val: 'intersect',
     component: <Intersect/>,
   }, {
-    label: 'Account',
-    val: 'account',
+    label: 'Profile',
+    val: 'profile',
     component: <Account username={username} profile={profile}/>,
   }];
 
