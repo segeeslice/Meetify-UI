@@ -1,7 +1,7 @@
 # Meetify Front-end TODO
 
 ## !!URGENT!!
-1. [ ] Add all tabs to the matches page
+1. [x] Add all tabs to the matches page
 1. [ ] Make meet page look like matches page
 1. [ ] Account -> Profile
 1. [ ] Make user's own profile editable
