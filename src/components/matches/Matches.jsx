@@ -22,6 +22,7 @@ const useStyles = makeStyles((theme) => ({
   root: {
     height: '100%',
     width: '100%',
+    position: 'relative',
   },
   card: {
     margin: theme.spacing(1),
@@ -38,12 +39,14 @@ const useStyles = makeStyles((theme) => ({
   userView: {
     height: '100%',
     width: '100%',
+    position: 'absolute',
+    top: 0,
   },
   matchesView: {
     height: '100%',
     width: '100%',
     paddingRight: 50,
-    position: 'relative'
+    position: 'relative',
   },
 }))
 
@@ -102,10 +105,12 @@ export default function Matches (props) {
   ))
 
   const userView = (
-    <UserView
-      onCloseClick={closeUserView}
-      user={selectedUser}
-    />
+    <div className={classes.userView}>
+      <UserView
+        onCloseClick={closeUserView}
+        user={selectedUser}
+      />
+    </div>
   )
 
   const matchesView = (
@@ -123,7 +128,8 @@ export default function Matches (props) {
 
   return (
     <div className={classes.root}>
-      { selectedUser ? userView : matchesView }
+      { matchesView }
+      { selectedUser && userView }
     </div>
   )
 }
