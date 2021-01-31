@@ -23,7 +23,7 @@ import {
   Typography,
 } from '@material-ui/core'
 
-import UserAvatar from '../UserAvatar'
+import UserAvatar from '../user/UserAvatar'
 import MeetUserDialog from './MeetUserDialog'
 
 const useStyles = makeStyles((theme) => ({

@@ -46,6 +46,7 @@ export default function Intersect (props) {
         <Grid item>
           <TextField
             label="Other User's ID"
+            variant="outlined"
             value={userId}
             onChange={e => dispatch(setUserId(e.target.value))}
           />

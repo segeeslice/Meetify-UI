@@ -33,3 +33,10 @@ export const getPlaylistIntersect = (userId1, userId2) => {
       return e
     })
 }
+
+// TODO: Test db here to actually apply changes
+export const sendMessage = async ({userFrom, userTo, date, text}) => {
+  return new Promise(resolve => setTimeout(() => {
+    resolve()
+  }, 2000))
+}
