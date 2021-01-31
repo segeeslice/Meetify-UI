@@ -6,7 +6,10 @@
  * given their similarities. Noted as "Match" since "Meet" is a special case,
  * disabling some items
  *
- * If using this for meeting, inMatchMode flag should be used
+ * If using this for meeting, inMeetMode flag should be used
+ * This has the following changes:
+ * - "Chat" button -> "Add Person" button
+ * - No chat tab when viewing the user
  */
 
 import React, { useState } from 'react'
@@ -16,6 +19,8 @@ import { makeStyles } from '@material-ui/core/styles'
 import {
   Grid,
 } from '@material-ui/core'
+import ChatIcon from '@material-ui/icons/Chat'
+import PersonAddIcon from '@material-ui/icons/PersonAdd'
 
 import RefreshButton from '../RefreshButton'
 import UserTile from '../user/UserTile'
@@ -57,7 +62,7 @@ export default function MatchesView (props) {
   const classes = useStyles()
 
   const {
-    inMatchMode,
+    inMeetMode,
     matches,
     onRefreshClick,
     onCloseClick,
@@ -70,6 +75,9 @@ export default function MatchesView (props) {
   const onChatClick =({user}) => {
     selectTab('chat')
     selectUser(user)
+  }
+  const onAddClick = ({user}) => {
+    console.log('Adding!')
   }
   const onProfileClick =({user}) => {
     selectTab('profile')
@@ -88,10 +96,11 @@ export default function MatchesView (props) {
       key={i}
       className={classes.card}
       user={user}
-      onChatClick={() => onChatClick({user})}
+      onActionClick={() => inMeetMode ? onAddClick({user}) : onChatClick({user})}
       onProfileClick={() => onProfileClick({user})}
       onCloseClick={() => onCloseClick && onCloseClick({user})}
       onSongsClick={() => onSongsClick({user})}
+      actionButtonIcon={inMeetMode ? <PersonAddIcon/> : <ChatIcon/>}
     />
   ))
 
@@ -101,6 +110,7 @@ export default function MatchesView (props) {
         onCloseClick={closeUserView}
         user={selectedUser}
         defaultTab={selectedTab}
+        chatHidden={inMeetMode}
       />
     </div>
   )

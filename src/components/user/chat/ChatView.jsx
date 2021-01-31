@@ -63,7 +63,7 @@ export default function ChatView (props) {
   const otherUserFirstName = otherUser.profile.displayName.split(' ')[0]
   const inputPlaceholder = `Message ${otherUserFirstName}`
 
-  const chats = messages.map((m, i) => {
+  const chats = (messages || []).map((m, i) => {
     const otherUserSent = m.sender === otherUser.username
     const directionClass = otherUserSent ? classes.chatLeft : classes.chatRight
     const color = otherUserSent ? 'secondary' : 'primary'

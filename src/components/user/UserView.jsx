@@ -61,6 +61,7 @@ export default function UserView (props) {
     onCloseClick,
     user,
     defaultTab,
+    chatHidden,
   } = props
 
   const {
@@ -85,7 +86,7 @@ export default function UserView (props) {
           albumArtUrl={row.albumArtUrl}
         />
       </div>
-    ))
+    )),
   }, {
     val: 'chat',
     icon: <ChatIcon/>,
@@ -93,8 +94,8 @@ export default function UserView (props) {
       <ChatView
         otherUser={user}
       />
-    )
-  }]
+    ),
+  }].filter(o => !(o.val === 'chat' && chatHidden))
 
   const DEFAULT_TAB_INDEX = (defaultTab && TABS_CONFIG.findIndex(o => o.val === defaultTab)) || 0
   const [activeTabIndex, setActiveTabIndex] = useState(DEFAULT_TAB_INDEX)
