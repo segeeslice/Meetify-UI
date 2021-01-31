@@ -6,7 +6,7 @@
  * - user [obj] = user object, as formatted in store
  */
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 
 import {
@@ -98,6 +98,11 @@ export default function UserView (props) {
 
   const DEFAULT_TAB_INDEX = (defaultTab && TABS_CONFIG.findIndex(o => o.val === defaultTab)) || 0
   const [activeTabIndex, setActiveTabIndex] = useState(DEFAULT_TAB_INDEX)
+
+  useEffect(() => {
+    setActiveTabIndex(DEFAULT_TAB_INDEX)
+  }, [DEFAULT_TAB_INDEX])
+
   const activeComponent = TABS_CONFIG[activeTabIndex].component
 
   return (

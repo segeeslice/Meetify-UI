@@ -109,6 +109,7 @@ export default function Matches (props) {
       <UserView
         onCloseClick={closeUserView}
         user={selectedUser}
+        defaultTab={selectedTab}
       />
     </div>
   )
