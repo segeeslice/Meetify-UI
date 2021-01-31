@@ -1,5 +1,13 @@
 # Meetify Front-end TODO
 
+## !!URGENT!!
+1. [ ] Add all tabs to the matches page
+1. [ ] Make meet page look like matches page
+1. [ ] Account -> Profile
+1. [ ] Make user's own profile editable
+1. [ ] Probably simplify profile and remove gradient
+1. [ ] Add "create account" form to front page
+
 ## Initial Designs
 1. [x] Investigate color schemes (green & pink?)
 1. [x] Song tiles
@@ -14,20 +22,22 @@
 1. [x] Meet area
     1. [x] User list
         - Similar to SongTile
-    1. [ ] Exact song match view
-        x Floating maximizable dialog
+    1. [x] Exact song match view
+        - Floating maximizable dialog
     1. [x] Profile view
         - Floating maximizable dialog
-1. [ ] Messaging area
-    1. [ ] Chat selection
-    1. [ ] Chat usage
-1. [ ] General alert for errors
+1. [x] Messaging area
+    1. [x] Chat selection
+    1. [x] Chat usage
+1. [x] General alert for errors
     
 ## Design refine
 1. [x] Make song tiles smaller & exclude album
 1. [ ] Redesign meet area to use "generic" material cards
 1. [ ] Make song tiles clickable
 1. [ ] Make profile page use avatars
+1. [ ] Add chat loading
+   - Stretch: Better implement message testing to actually display your message?
 
 ## Boilerplate & Administrative
 1. [x] Investigate Typescript integration

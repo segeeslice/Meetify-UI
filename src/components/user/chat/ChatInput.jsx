@@ -38,7 +38,6 @@ export default function ChatInput (props) {
   // NOTE: This may be causing too many re-renders? But unsure how to mitigate
   //       Doesn't appear to severely impact performance, given small component
   const [text, setText] = useState()
-  // TODO: Loading icons and things
 
   const {
     placeholder,
@@ -46,6 +45,8 @@ export default function ChatInput (props) {
   } = props
 
   const onSendClick = useCallback((text) => {
+    // TODO: Loading icons and things
+
     // Send message to server
     sendMessage({
       userFrom,
