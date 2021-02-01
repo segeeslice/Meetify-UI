@@ -41,8 +41,14 @@ export const accountSlice = createSlice({
       //       (which should probably be async)
       state.profile = {...PROFILE_TEST_INFO}
     },
+    editProfile: (state, action) => {
+      // TODO: Send to server and receive again
+      const { changes } = action.payload
+      state.profile = { ...state.profile, ...changes }
+      console.log(state.profile)
+    }
   }
 })
 
-export const { login, logout, setUsername } = accountSlice.actions
+export const { login, logout, setUsername, editProfile } = accountSlice.actions
 export default accountSlice.reducer
