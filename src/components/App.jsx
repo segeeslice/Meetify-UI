@@ -41,7 +41,7 @@ export default function App () {
   }, {
     label: 'Profile',
     val: 'profile',
-    component: <Account username={username} profile={profile}/>,
+    component: <Account username={username} profile={profile} editable/>,
   }];
 
   const TAB_DEFAULT = TAB_CONFIG[0].val
