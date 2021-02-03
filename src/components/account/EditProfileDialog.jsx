@@ -1,3 +1,8 @@
+/*
+ * Dialog with fields for editing a user's profile
+ * Events/data must be handled in parent
+ */
+
 import React, { useState, useEffect } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 
