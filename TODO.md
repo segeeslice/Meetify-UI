@@ -38,6 +38,7 @@
 1. [ ] Make profile page use avatars
 1. [ ] Add chat loading
    - Stretch: Better implement message testing to actually display your message?
+1. [ ] Intersect tab - add heading subtitle with some more details about the tab
 
 ## Boilerplate & Administrative
 1. [x] Investigate Typescript integration
