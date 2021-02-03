@@ -15,6 +15,7 @@ import {
   TextField,
   Typography,
 } from '@material-ui/core'
+import CreateAccountDialog from './CreateAccountDialog'
 
 import { login, setUsername } from './accountSlice'
 import { theme } from '../../theme'
@@ -38,6 +39,8 @@ export default function Login (props) {
   const [loginVisible, setLoginVisible] = useState(true)
   const [welcomeVisible, setWelcomeVisible] = useState(false)
   const [timeoutVar, setTimeoutVar] = useState(null)
+
+  const [createDialogOpen, setCreateDialogOpen] = useState(false)
 
   const onLoginClick = () => {
     // TODO: (Eventually) Query against server and emit success then
@@ -63,7 +66,11 @@ export default function Login (props) {
   })
 
   const onRegisterClick = () => {
-    console.log('clicked!')
+    setCreateDialogOpen(true)
+  }
+
+  const onCreateAccountSubmit = (obj) => {
+    setCreateDialogOpen(false)
   }
 
   const gridItemStyle = { textAlign: 'center', paddingBottom: '10px' }
@@ -182,6 +189,11 @@ export default function Login (props) {
           {welcomeComp}
         </Grid>
       </CSSTransition>
+      <CreateAccountDialog
+        open={createDialogOpen}
+        onCancel={() => setCreateDialogOpen(false)}
+        onSubmit={onCreateAccountSubmit}
+      />
     </div>
   )
 }
