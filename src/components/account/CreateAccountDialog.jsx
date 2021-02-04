@@ -5,6 +5,10 @@
 
 import React, { useState, useEffect } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
+import {
+  checkValidEmail,
+  checkValidPassword,
+} from '../../util'
 
 import {
   TextField,
@@ -40,6 +44,9 @@ const useStyles = makeStyles((theme) => ({
     width: theme.spacing(6),
     height: theme.spacing(6),
   },
+  hintText: {
+    color: theme.palette.text.hint
+  },
 }))
 
 export default function EditProfileDialog(props) {
@@ -54,10 +61,23 @@ export default function EditProfileDialog(props) {
   const [ password, setPassword ] = useState('')
   const [ passwordRepeat, setPasswordRepeat ] = useState('')
 
-  // TODO
-  // const emailError = (!email && 'Email must be defined!') ||
-  //       ()
-  // const passwordError =
+  // Monitor if user has changed a field so we don't report errors for doing nothing
+  const [ emailChanged, setEmailChanged ] = useState(false)
+  const [ passwordChanged, setPasswordChanged ] = useState(false)
+  const [ passwordRepeatChanged, setPasswordRepeatChanged ] = useState(false)
+
+  // Central location for field errors
+  // If there's an error, should be set to error reason. Otherwise should be false
+  const emailError = emailChanged &&
+        (!checkValidEmail(email) && 'Invalid email')
+  const passwordError = passwordChanged &&
+        (!checkValidPassword(password) && 'Password must be at least 10 characters')
+  const passwordRepeatError = passwordRepeatChanged &&
+        (password !== passwordRepeat && 'Passwords must match')
+
+  const submitButtonDisabled =
+        !email || !password || !passwordRepeat ||
+        !!emailError || !!passwordError || !!passwordRepeatError
 
   // Reset any previous changes when opening
   useEffect(() => {
@@ -65,6 +85,10 @@ export default function EditProfileDialog(props) {
       setEmail('')
       setPassword('')
       setPasswordRepeat('')
+
+      setEmailChanged(false)
+      setPasswordChanged(false)
+      setPasswordRepeatChanged(false)
     }
   }, [open])
 
@@ -73,7 +97,7 @@ export default function EditProfileDialog(props) {
       open={open}
       title="Create Account"
       submitButtonText="Create Account"
-      /* submitButtonDisabled={emailError || passwordError} */
+      submitButtonDisabled={submitButtonDisabled}
       onSubmit={() => onSubmit && onSubmit({email, password})}
       onClose={() => onCancel && onCancel()}
       onCancel={() => onCancel && onCancel()}
@@ -87,33 +111,48 @@ export default function EditProfileDialog(props) {
         className={classes.editableMargin}
         label="Email Address"
         variant="outlined"
-        /* error={emailError} */
-        /* helperText={emailError} */
+        error={!!emailError}
+        helperText={emailError}
         fullWidth
         required
         value={email}
-        onChange={(e) => setEmail(e.target.value)}
+        onChange={(e) => {setEmail(e.target.value); setEmailChanged(true)}}
+        inputProps={{spellCheck: false}}
       />
+
+      <Typography variant="body1" className={`${classes.editableMargin} ${classes.hintText}`}>
+        We don't have restrictions on what's in your password, but <strong>make
+        it long!</strong> Password length is what really keeps you secure.
+
+        <br/><br/>
+
+        <strong>Our tip:</strong> Try a unique but easy-to-remember sentence, such as:<br/>
+        <em>"Timetomeet42greatnewfriends!"</em>
+      </Typography>
 
       <TextField
         className={classes.editableMargin}
         label="Password"
         type="password"
         variant="outlined"
+        error={!!passwordError}
+        helperText={passwordError}
         fullWidth
         required
         value={password}
-        onChange={(e) => setPassword(e.target.value)}
+        onChange={(e) => {setPassword(e.target.value); setPasswordChanged(true)}}
       />
       <TextField
         className={classes.editableMargin}
         label="Confirm Password"
         type="password"
         variant="outlined"
+        error={!!passwordRepeatError}
+        helperText={passwordRepeatError}
         fullWidth
         required
         value={passwordRepeat}
-        onChange={(e) => setPasswordRepeat(e.target.value)}
+        onChange={(e) => {setPasswordRepeat(e.target.value); setPasswordRepeatChanged(true)}}
       />
     </FormDialog>
   )
