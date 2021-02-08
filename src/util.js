@@ -19,3 +19,19 @@ export const getShortDate = (date) => {
 export const getShortDateTime = (date) => {
   return `${getShortDate(date)} ${getShortTime(date)}`
 }
+
+// True if valid email; originally supplied by:
+// https://stackoverflow.com/questions/46155/how-to-validate-an-email-address-in-javascript
+export const checkValidEmail = (email) => {
+  const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+  // TODO: Make max lengths universal in central config doc
+  return re.test(email.toLowerCase()) && email.length <= 254
+}
+
+// True if valid password
+// Do NOT check for symbols; UI should instead encourage long passwords
+export const checkValidPassword = (password) => {
+  const re = /(.){10,}$/
+  // TODO: Make max lengths universal in central config doc
+  return re.test(password) && password.length <= 128
+}
