@@ -29,11 +29,8 @@ export const accountSlice = createSlice({
     }
   },
   reducers: {
-    login: state => {
-      state.loggedIn = true
-    },
-    logout: state => {
-      state.loggedIn = true
+    setLoggedIn: (state, action) => {
+      state.loggedIn = action.payload
     },
     setUsername: (state, action) => {
       state.username = action.payload
@@ -50,5 +47,5 @@ export const accountSlice = createSlice({
   }
 })
 
-export const { login, logout, setUsername, editProfile } = accountSlice.actions
+export const { setLoggedIn, setUsername, editProfile } = accountSlice.actions
 export default accountSlice.reducer

@@ -1,6 +1,5 @@
 /*
  * UI component for the opening login screen w/ welcome animation
- * (NOTE: Currently just uses test data)
  */
 
 import React, { useState, useEffect, useRef } from 'react'
@@ -10,14 +9,16 @@ import { makeStyles } from '@material-ui/core/styles'
 
 import {
   Button,
-  Divider,
   Grid,
+  Snackbar,
   TextField,
   Typography,
 } from '@material-ui/core'
+import { Alert } from '@material-ui/lab'
 import CreateAccountDialog from './CreateAccountDialog'
 
-import { login, setUsername } from './accountSlice'
+import { login } from '../../server'
+import { setUsername, setLoggedIn } from './accountSlice'
 import { theme } from '../../theme'
 
 const TRANSITION_DURATION = 500
@@ -34,45 +35,53 @@ export default function Login (props) {
   const dispatch = useDispatch()
 
   const username = useSelector(state => state.account.username)
-
   const [password, setPassword] = useState('')
+
   const [loginVisible, setLoginVisible] = useState(true)
   const [welcomeVisible, setWelcomeVisible] = useState(false)
   const [timeoutVar, setTimeoutVar] = useState(null)
 
+  const [loginErrorOpen, setLoginErrorOpen] = useState(false)
   const [createDialogOpen, setCreateDialogOpen] = useState(false)
 
-  const onLoginClick = () => {
-    // TODO: (Eventually) Query against server and emit success then
+  const onLoginClick = async () => {
+    login({ username, password })
+      // Set username from server just to be sure
+      .then(({ username }) => dispatch(setUsername(username)))
 
-    // Phase 1: Fade out login
-    setLoginVisible(false)
+      // Trigger login animation chain
+      .then(() => setLoginVisible(false))
 
-    // Phase 2: Fade in welcome message
-    setWelcomeVisible(true)
-
-    // Phase 3: Emit success event after slight delay
-    setTimeoutVar(setTimeout(() => {
-      dispatch(setUsername(username))
-      dispatch(login())
-      if (props.onSuccess) props.onSuccess()
-    }, TRANSITION_DURATION + WELCOME_DURATION))
+      .catch((e) => {
+        console.log(e)
+        setLoginErrorOpen(true)
+        setPassword('')
+      })
   }
 
+  // Login and welcome transition handling
+  useEffect(() => {
+    if (loginVisible === false) setWelcomeVisible(true)
+  }, [loginVisible])
+  useEffect(() => {
+    if (welcomeVisible === true) {
+      setTimeoutVar(setTimeout(() => {
+        dispatch(setLoggedIn(true))
+      }, TRANSITION_DURATION + WELCOME_DURATION))
+    }
+  }, [welcomeVisible, dispatch])
+
+  // Cleanup timeout on destroy, just in case
   useEffect(() => {
     return function cleanup() {
-      clearTimeout(timeoutVar) // Just in case!
+      clearTimeout(timeoutVar)
     }
   })
 
-  const onRegisterClick = () => {
-    setCreateDialogOpen(true)
-  }
+  const onRegisterClick = () => setCreateDialogOpen(true)
+  const onCreateAccountSubmit = (obj) => setCreateDialogOpen(false)
 
-  const onCreateAccountSubmit = (obj) => {
-    setCreateDialogOpen(false)
-  }
-
+  // TODO: Move these to material-ui's makeStyle syntax
   const gridItemStyle = { textAlign: 'center', paddingBottom: '10px' }
 
   // Login component, where user enters username and password
@@ -189,11 +198,25 @@ export default function Login (props) {
           {welcomeComp}
         </Grid>
       </CSSTransition>
+
       <CreateAccountDialog
         open={createDialogOpen}
         onCancel={() => setCreateDialogOpen(false)}
         onSubmit={onCreateAccountSubmit}
       />
+      <Snackbar
+        autoHideDuration={6000}
+        open={loginErrorOpen}
+        onClose={() => setLoginErrorOpen(false)}
+        color="error"
+      >
+        <Alert
+          severity="error"
+          onClose={() => setLoginErrorOpen(false)}
+        >
+          Invalid username or password
+        </Alert>
+      </Snackbar>
     </div>
   )
 }
