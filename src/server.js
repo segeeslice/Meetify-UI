@@ -7,6 +7,12 @@
 import axios from 'axios'
 import jQuery from 'jquery'
 
+import {
+  checkValidUsername,
+  checkValidEmail,
+  checkValidPassword,
+} from './util'
+
 // Always send with credentials to ensure cookies are sent/received
 axios.defaults.withCredentials = true
 
@@ -59,6 +65,7 @@ export const getPlaylistIntersect = (userId1, userId2) => {
     })
 }
 
+// NOTE: Currently doesn't use email... should allow either in the future?
 export const login = ({ username, email, password }) => {
   const urlPath = joinUrl(SERVER_URL, ...ENDPOINTS.login)
   const dataToSend = {
@@ -78,6 +85,17 @@ export const login = ({ username, email, password }) => {
     }).catch((e) => {
       throw e
     })
+}
+
+export const signup = ({ username, email, password }) => {
+  if (!checkValidUsername(username)) throw Error (`Invalid registration username: ${email}`)
+  if (!checkValidEmail(email)) throw Error (`Invalid registration email: ${email}`)
+  if (!checkValidPassword(password)) throw Error (`Invalid registration email`)
+
+  const defaultDisplayName = email.split('@')[0]
+  console.log(defaultDisplayName)
+
+  return new Promise((resolve) => resolve())
 }
 
 // TODO: Test db here to actually apply changes

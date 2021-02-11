@@ -5,6 +5,7 @@
 
 import React, { useState, useEffect } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
+import { signup } from '../../server'
 import {
   checkValidEmail,
   checkValidPassword,
@@ -101,7 +102,14 @@ export default function EditProfileDialog(props) {
   }, [open])
 
   const onSubmit = () => {
-    onSuccess && onSuccess()
+    signup({username, email, password,})
+      .then(() => {
+        onSuccess && onSuccess()
+      })
+      .catch((e) => {
+        console.error(e)
+        onFail && onFail(e)
+      })
   }
 
   return (
