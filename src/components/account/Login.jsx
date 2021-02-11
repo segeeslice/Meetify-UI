@@ -205,7 +205,8 @@ export default function Login (props) {
       <CreateAccountDialog
         open={createDialogOpen}
         onCancel={() => setCreateDialogOpen(false)}
-        onSubmit={onCreateAccountSubmit}
+        onSuccess={() => setCreateDialogOpen(false)}
+        onFail={() => setCreateDialogOpen(false)}
       />
     </div>
   )

@@ -8,6 +8,7 @@ import { makeStyles } from '@material-ui/core/styles'
 import {
   checkValidEmail,
   checkValidPassword,
+  checkValidUsername,
 } from '../../util'
 
 import {
@@ -53,21 +54,26 @@ export default function EditProfileDialog(props) {
   const {
     open,
     onCancel,
-    onSubmit,
+    onFail,
+    onSuccess,
   } = props
 
   const classes = useStyles()
+  const [ username, setUsername ] = useState('')
   const [ email, setEmail ] = useState('')
   const [ password, setPassword ] = useState('')
   const [ passwordRepeat, setPasswordRepeat ] = useState('')
 
   // Monitor if user has changed a field so we don't report errors for doing nothing
+  const [ usernameChanged, setUsernameChanged ] = useState(false)
   const [ emailChanged, setEmailChanged ] = useState(false)
   const [ passwordChanged, setPasswordChanged ] = useState(false)
   const [ passwordRepeatChanged, setPasswordRepeatChanged ] = useState(false)
 
   // Central location for field errors
   // If there's an error, should be set to error reason. Otherwise should be false
+  const usernameError = usernameChanged &&
+        (!checkValidUsername(username) && 'Username must be at least 5 letters, numbers, and/or allowed symbols')
   const emailError = emailChanged &&
         (!checkValidEmail(email) && 'Invalid email')
   const passwordError = passwordChanged &&
@@ -76,21 +82,27 @@ export default function EditProfileDialog(props) {
         (password !== passwordRepeat && 'Passwords must match')
 
   const submitButtonDisabled =
-        !email || !password || !passwordRepeat ||
-        !!emailError || !!passwordError || !!passwordRepeatError
+        !username || !email || !password || !passwordRepeat ||
+        !!usernameError || !!emailError || !!passwordError || !!passwordRepeatError
 
   // Reset any previous changes when opening
   useEffect(() => {
     if (open === true) {
+      setUsername('')
       setEmail('')
       setPassword('')
       setPasswordRepeat('')
 
+      setUsernameChanged(false)
       setEmailChanged(false)
       setPasswordChanged(false)
       setPasswordRepeatChanged(false)
     }
   }, [open])
+
+  const onSubmit = () => {
+    onSuccess && onSuccess()
+  }
 
   return (
     <FormDialog
@@ -98,7 +110,7 @@ export default function EditProfileDialog(props) {
       title="Create Account"
       submitButtonText="Create Account"
       submitButtonDisabled={submitButtonDisabled}
-      onSubmit={() => onSubmit && onSubmit({email, password})}
+      onSubmit={() => onSubmit()}
       onClose={() => onCancel && onCancel()}
       onCancel={() => onCancel && onCancel()}
     >
@@ -106,6 +118,19 @@ export default function EditProfileDialog(props) {
         Welcome to <strong>Meetify</strong>! Before you start meeting people, we
         just need some basic info...
       </Typography>
+
+      <TextField
+        className={classes.editableMargin}
+        label="Username"
+        variant="outlined"
+        error={!!usernameError}
+        helperText={usernameError}
+        fullWidth
+        required
+        value={username}
+        onChange={(e) => {setUsername(e.target.value); setUsernameChanged(true)}}
+        inputProps={{spellCheck: false}}
+      />
 
       <TextField
         className={classes.editableMargin}
