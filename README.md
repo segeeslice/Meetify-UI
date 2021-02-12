@@ -1,6 +1,6 @@
 # Meetify Front-end
 
-**Current version:** 0.1.1
+**Current version:** 0.2.0
 
 This repository contains all the code for the **front-end** application(s) for
 interacting with the online services of the Meetify project.
