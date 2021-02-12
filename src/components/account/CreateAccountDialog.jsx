@@ -103,12 +103,17 @@ export default function EditProfileDialog(props) {
 
   const onSubmit = () => {
     signup({username, email, password,})
-      .then(() => {
+      .then((r) => {
         onSuccess && onSuccess()
       })
       .catch((e) => {
+        // TODO: Set up a globally acessible error dialog to display this
         console.error(e)
-        onFail && onFail(e)
+
+        setPassword('')
+        setPasswordRepeat('')
+        setPasswordChanged(false)
+        setPasswordRepeatChanged(false)
       })
   }
 

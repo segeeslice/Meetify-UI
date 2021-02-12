@@ -19,7 +19,8 @@ axios.defaults.withCredentials = true
 const SERVER_URL = 'http://localhost:8000'
 
 const ENDPOINTS = {
-  login: ['user', 'login']
+  login: ['user', 'login'],
+  signup: ['user', 'signup'],
 }
 
 // Nabs any cookie (that's not http-only) from the browser
@@ -66,7 +67,7 @@ export const getPlaylistIntersect = (userId1, userId2) => {
 }
 
 // NOTE: Currently doesn't use email... should allow either in the future?
-export const login = ({ username, email, password }) => {
+export const login = async ({ username, email, password }) => {
   const urlPath = joinUrl(SERVER_URL, ...ENDPOINTS.login)
   const dataToSend = {
     Username: username,
@@ -87,15 +88,34 @@ export const login = ({ username, email, password }) => {
     })
 }
 
-export const signup = ({ username, email, password }) => {
+export const signup = async ({ username, email, password }) => {
   if (!checkValidUsername(username)) throw Error (`Invalid registration username: ${email}`)
   if (!checkValidEmail(email)) throw Error (`Invalid registration email: ${email}`)
   if (!checkValidPassword(password)) throw Error (`Invalid registration email`)
 
+  const urlPath = joinUrl(SERVER_URL, ...ENDPOINTS.signup)
   const defaultDisplayName = email.split('@')[0]
-  console.log(defaultDisplayName)
 
-  return new Promise((resolve) => resolve())
+  const dataToSend = {
+    Username: username,
+    Email: email,
+    Password: password,
+    DisplayName: defaultDisplayName,
+    ZipCode: null,
+    ProfilePic: null,
+  }
+
+  return axios.post(urlPath, dataToSend)
+    .then(async (r) => {
+      console.log(r)
+    }).catch((e) => {
+      if (e.response) {
+        if (e.response.status === 409) {
+          throw Error('Could not create account: That username is already taken!')
+        }
+      }
+      throw e
+    })
 }
 
 // TODO: Test db here to actually apply changes
