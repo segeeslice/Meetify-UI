@@ -5,7 +5,6 @@
 import React, { useState, useRef } from 'react'
 import { CSSTransition } from 'react-transition-group'
 import { Tab, Paper } from '@material-ui/core'
-import { ThemeProvider } from '@material-ui/core/styles'
 import { useSelector } from 'react-redux'
 
 import VerticalTabBar from './VerticalTabBar'
@@ -16,7 +15,6 @@ import Intersect from './intersect/Intersect'
 import Account from './account/Account'
 import Matches from './matches/Matches'
 
-import { theme } from '../theme'
 import './App.css'
 
 const TRANSITION_DURATION = 500
@@ -77,37 +75,35 @@ export default function App () {
   const appRef = useRef(null)
 
   return (
-    <ThemeProvider theme={theme}>
-      <Paper className="app-root" square style={{position:'relative'}}>
-        {/* TODO: Try to make this into generic transition component */}
-        <CSSTransition
-          classNames="fade"
-          timeout={TRANSITION_DURATION}
-          unmountOnExit
-          style={{position: 'absolute', height: '100%', width: '100%'}}
-          nodeRef={loginRef}
-          in={!loggedIn}
-        >
-          <div ref={loginRef}>
-            <Login/>
-          </div>
-        </CSSTransition>
+    <Paper className="app-root" square style={{position:'relative'}}>
+      {/* TODO: Try to make this into generic transition component */}
+      <CSSTransition
+        classNames="fade"
+        timeout={TRANSITION_DURATION}
+        unmountOnExit
+        style={{position: 'absolute', height: '100%', width: '100%'}}
+        nodeRef={loginRef}
+      in={!loggedIn}
+      >
+        <div ref={loginRef}>
+          <Login/>
+        </div>
+      </CSSTransition>
 
-        <CSSTransition
-          classNames="fade"
-          timeout={TRANSITION_DURATION}
-          unmountOnExit
-          style={{position: 'absolute', height: '100%', width: '100%'}}
-          nodeRef={appRef}
-          in={loggedIn}
-        >
-          <div ref={appRef}>
-            <div style={{display: 'flex', height: '100%', width: '100%'}}>
-              {mainAppComp}
-            </div>
+      <CSSTransition
+        classNames="fade"
+        timeout={TRANSITION_DURATION}
+        unmountOnExit
+        style={{position: 'absolute', height: '100%', width: '100%'}}
+        nodeRef={appRef}
+      in={loggedIn}
+      >
+        <div ref={appRef}>
+          <div style={{display: 'flex', height: '100%', width: '100%'}}>
+            {mainAppComp}
           </div>
-        </CSSTransition>
-      </Paper>
-    </ThemeProvider>
+        </div>
+      </CSSTransition>
+    </Paper>
   );
 }

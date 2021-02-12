@@ -7,6 +7,8 @@ import { useDispatch, useSelector } from 'react-redux'
 import { CSSTransition } from 'react-transition-group'
 import { makeStyles } from '@material-ui/core/styles'
 
+import useAlert from '../../hooks/useAlert'
+
 import {
   Button,
   Grid,
@@ -34,6 +36,8 @@ export default function Login (props) {
   const classes = useStyles()
   const dispatch = useDispatch()
 
+  const { addMessage } = useAlert()
+
   const username = useSelector(state => state.account.username)
   const [password, setPassword] = useState('')
 
@@ -41,7 +45,6 @@ export default function Login (props) {
   const [welcomeVisible, setWelcomeVisible] = useState(false)
   const [timeoutVar, setTimeoutVar] = useState(null)
 
-  const [loginErrorOpen, setLoginErrorOpen] = useState(false)
   const [createDialogOpen, setCreateDialogOpen] = useState(false)
 
   const onLoginClick = async () => {
@@ -54,7 +57,7 @@ export default function Login (props) {
 
       .catch((e) => {
         console.log(e)
-        setLoginErrorOpen(true)
+        addMessage({text: 'Invalid username or password', severity: 'error'})
         setPassword('')
       })
   }
@@ -204,19 +207,6 @@ export default function Login (props) {
         onCancel={() => setCreateDialogOpen(false)}
         onSubmit={onCreateAccountSubmit}
       />
-      <Snackbar
-        autoHideDuration={6000}
-        open={loginErrorOpen}
-        onClose={() => setLoginErrorOpen(false)}
-        color="error"
-      >
-        <Alert
-          severity="error"
-          onClose={() => setLoginErrorOpen(false)}
-        >
-          Invalid username or password
-        </Alert>
-      </Snackbar>
     </div>
   )
 }

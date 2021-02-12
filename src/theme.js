@@ -67,3 +67,4 @@ theme.getGradient = (colors, opts) => {
 }
 
 export { theme }
+export default theme
