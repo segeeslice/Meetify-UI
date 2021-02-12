@@ -6,7 +6,16 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { CSSTransition } from 'react-transition-group'
-import { Grid, TextField, Button, Typography } from '@material-ui/core'
+import { makeStyles } from '@material-ui/core/styles'
+
+import {
+  Button,
+  Divider,
+  Grid,
+  TextField,
+  Typography,
+} from '@material-ui/core'
+import CreateAccountDialog from './CreateAccountDialog'
 
 import { login, setUsername } from './accountSlice'
 import { theme } from '../../theme'
@@ -14,16 +23,26 @@ import { theme } from '../../theme'
 const TRANSITION_DURATION = 500
 const WELCOME_DURATION = 2000
 
+const useStyles = makeStyles((theme) => ({
+  registerButton: {
+    color: theme.palette.secondary.light
+  },
+}))
+
 export default function Login (props) {
+  const classes = useStyles()
+  const dispatch = useDispatch()
+
   const username = useSelector(state => state.account.username)
+
   const [password, setPassword] = useState('')
   const [loginVisible, setLoginVisible] = useState(true)
   const [welcomeVisible, setWelcomeVisible] = useState(false)
   const [timeoutVar, setTimeoutVar] = useState(null)
 
-  const dispatch = useDispatch()
+  const [createDialogOpen, setCreateDialogOpen] = useState(false)
 
-  const handleClick = () => {
+  const onLoginClick = () => {
     // TODO: (Eventually) Query against server and emit success then
 
     // Phase 1: Fade out login
@@ -45,6 +64,14 @@ export default function Login (props) {
       clearTimeout(timeoutVar) // Just in case!
     }
   })
+
+  const onRegisterClick = () => {
+    setCreateDialogOpen(true)
+  }
+
+  const onCreateAccountSubmit = (obj) => {
+    setCreateDialogOpen(false)
+  }
 
   const gridItemStyle = { textAlign: 'center', paddingBottom: '10px' }
 
@@ -80,9 +107,23 @@ export default function Login (props) {
           disableElevation
           color="primary"
           variant="contained"
-          onClick={() => handleClick()}
+          onClick={onLoginClick}
         >
           Login
+        </Button>
+      </Grid>
+      {/* TODO: Could add nice lilttle divider, but would need to mess with CSS */}
+      {/* <Grid item style={gridItemStyle} xs={12}> */}
+      {/*   <Divider/> */}
+      {/* </Grid> */}
+      <Grid item style={gridItemStyle} xs={12}>
+        <Button
+          disableElevation
+          color="secondary"
+          onClick={onRegisterClick}
+          className={classes.registerButton}
+        >
+          Register
         </Button>
       </Grid>
     </>
@@ -148,6 +189,11 @@ export default function Login (props) {
           {welcomeComp}
         </Grid>
       </CSSTransition>
+      <CreateAccountDialog
+        open={createDialogOpen}
+        onCancel={() => setCreateDialogOpen(false)}
+        onSubmit={onCreateAccountSubmit}
+      />
     </div>
   )
 }

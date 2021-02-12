@@ -9,6 +9,8 @@
  */
 
 import { createMuiTheme } from '@material-ui/core/styles';
+import red from '@material-ui/core/colors/red'
+import pink from '@material-ui/core/colors/pink'
 
 const theme = createMuiTheme({
   palette: {
@@ -20,9 +22,9 @@ const theme = createMuiTheme({
       contrastText: '#fff',
     },
     secondary: {
-      light: '#ef6694',
-      main: '#ec407a',
-      dark: '#a52c55',
+      light: pink[300],
+      main: pink[400],
+      dark: pink[500],
       contrastText: '#000',
     },
     gray: {
@@ -31,9 +33,18 @@ const theme = createMuiTheme({
       dark: '#110e0e',
       contrastText: '#000',
     },
+    error: {
+      light: red[300],
+      main: red[400],
+      dark: red[500],
+    },
+  },
+  tile: {
+    height: '135px',
   },
   images: {
     squareImageHeight: '150px',
+    cardImageHeight: '100px',
   },
 })
 

@@ -1,20 +1,31 @@
 /*
  * UI component for viewing logged-in account details
- * Accesses data from state.account, which should be set upon login
+ *
+ * Props:
+ * - username (String) = username of user's profile
+ * - profile (obj) = { displayName, status, description }
+ *   - (TODO: This should probably be a defined class)
+ * - editable (Boolean) = true if should allow for editing
  *
  * TODO: Should rename to "Profile", which is more accurate
  *       Separate "Account" section should more be settings & logistics
  * TODO: Should have a "editor" mode where sections are editable
  */
 
-import React from 'react'
-import { useSelector } from 'react-redux'
+import React, { useCallback, useState } from 'react'
+import { useDispatch } from 'react-redux'
+import { editProfile } from './accountSlice'
+
 import {
+  Button,
   Card,
   CardMedia,
   Grid,
   Typography,
 } from '@material-ui/core'
+import EditIcon from '@material-ui/icons/Edit'
+
+import EditProfileDialog from './EditProfileDialog'
 
 import './Account.css'
 import { theme } from '../../theme'
@@ -35,8 +46,26 @@ const PROFILE_IMG_SIZE = theme.images.squareImageHeight
 
 // TODO: Rename to Profile (account settings could & should be separate!)
 export default function Account (props) {
-  const username = useSelector((state) => state.account.username)
-  const profile = useSelector((state) => state.account.profile)
+  const dispatch = useDispatch()
+
+  const {
+    username,
+    profile,
+    editable,
+  } = props
+
+  const [ editDialogOpen, setEditDialogOpen ] = useState(false)
+
+  const openEditDialog = useCallback(() => {
+    setEditDialogOpen(true)
+  }, [setEditDialogOpen])
+  const onEditDialogCancel = useCallback(() => {
+    setEditDialogOpen(false)
+  }, [setEditDialogOpen])
+  const onEditDialogSave = useCallback((changes) => {
+    dispatch(editProfile({ changes }))
+    setEditDialogOpen(false)
+  }, [dispatch, setEditDialogOpen])
 
   const Header = (() => (
     <Card style={{width: '100%', background: HEADER_GRADIENT}}>
@@ -54,8 +83,9 @@ export default function Account (props) {
               style={{height: PROFILE_IMG_SIZE, width: PROFILE_IMG_SIZE}}
             />
           </Card>
-          <span style={{textAlign: 'left', margin: MARGIN, display: 'inline-flex', alignItems: 'center'}}>
-            <div>
+          <span style={{textAlign: 'left', margin: MARGIN, display: 'inline-flex', alignItems: 'center', flexGrow: 1}}>
+            <div style={{flexGrow: 1}}>
+              {/* TODO: Handle very long display names? */}
               <Typography variant="h5">
                 {profile.displayName}
               </Typography>
@@ -66,6 +96,15 @@ export default function Account (props) {
                 {profile.status}
               </Typography>
             </div>
+            {editable &&
+             <Button
+               startIcon={<EditIcon/>}
+               variant="outlined"
+               onClick={openEditDialog}
+             >
+               Edit Profile
+             </Button>
+            }
           </span>
         </Grid>
       </Grid>
@@ -110,6 +149,12 @@ export default function Account (props) {
         <Header/>
         <Description/>
       </Card>
+      <EditProfileDialog
+        open={editDialogOpen}
+        onCancel={onEditDialogCancel}
+        onSave={onEditDialogSave}
+        profile={profile}
+      />
     </div>
   );
 }
