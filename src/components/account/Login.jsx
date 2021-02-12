@@ -12,11 +12,9 @@ import useAlert from '../../hooks/useAlert'
 import {
   Button,
   Grid,
-  Snackbar,
   TextField,
   Typography,
 } from '@material-ui/core'
-import { Alert } from '@material-ui/lab'
 import CreateAccountDialog from './CreateAccountDialog'
 
 import { login } from '../../server'
@@ -36,7 +34,7 @@ export default function Login (props) {
   const classes = useStyles()
   const dispatch = useDispatch()
 
-  const { addMessage } = useAlert()
+  const { addAlert } = useAlert()
 
   const username = useSelector(state => state.account.username)
   const [password, setPassword] = useState('')
@@ -57,7 +55,8 @@ export default function Login (props) {
 
       .catch((e) => {
         console.log(e)
-        addMessage({text: 'Invalid username or password', severity: 'error'})
+        addAlert({text: 'Invalid username or password',
+                  severity: 'error'})
         setPassword('')
       })
   }

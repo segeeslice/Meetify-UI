@@ -12,10 +12,10 @@
  *   const [ addAlert ] = useAlert()
  *
  *   // addAlert will automatically call this component and display a
- *   // dismissible alert message
+ *   // dismissible alert alert
  *   addAlert({
- *     title: 'Info',
- *     message: 'Test message',
+ *     title: 'Info', // Only displayed if 'dialog' type
+ *     text: 'Test alert',
  *
  *     // Controls style of the alert
  *     // Same possible fields as Material UI's "Alert" severity:
@@ -24,6 +24,7 @@
  *
  *     // Controls how alert appears
  *     // Can be 'snackbar' or 'dialog'
+ *     // (TODO)
  *     type: 'snackbar',
  *   })
  */
@@ -34,29 +35,29 @@ import { Snackbar } from '@material-ui/core'
 import { Alert } from '@material-ui/lab'
 
 export default function AlertNotification () {
-  const { message, removeMessage } = useContext(AlertContext)
+  const { alert, removeAlert } = useContext(AlertContext)
 
-  // Tie opening to separate variable as opposed to using message itself to
-  // ensure no visual glitches when clearing message
+  // Tie opening to separate variable as opposed to using alert itself to
+  // ensure no visual glitches when clearing alert
   const [ open, setOpen ] = useState(false)
 
   useEffect(() => {
-    if (message) setOpen(true)
-  }, [message, setOpen])
+    if (alert) setOpen(true)
+  }, [alert, setOpen])
 
   return (
     <Snackbar
       autoHideDuration={6000}
       open={open}
       onClose={() => setOpen(false)}
-      onExited={() => removeMessage()}
+      onExited={() => removeAlert()}
       color="error"
     >
       <Alert
-        severity={(message && message.severity) || 'info'}
+        severity={(alert && alert.severity) || 'info'}
         onClose={() => setOpen(false)}
       >
-        { (message && message.text) || '(No details)' }
+        { (alert && alert.text) || '(No details)' }
       </Alert>
     </Snackbar>
   )
