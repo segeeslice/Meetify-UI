@@ -1,3 +1,14 @@
+/*
+ * Global React context provider, allowing for any component to import the same
+ * source data
+ *
+ * addMessage can be used anywhere for alert display
+ * message & removeMessage only intended for use in AlertNotification.jsx
+ *
+ * Use hooks/useAlert.jsx for simplified context import
+ * See components/global/AlertNotification.jsx for UI component & further usage
+ */
+
 import React, { useState, useCallback } from 'react';
 
 export const AlertContext = React.createContext({

@@ -1,6 +1,34 @@
-// TODO: Header comments
+/*
+ * Consumes items from the global Alert context to display an error
+ *
+ * Intended for use at the top level to be displayed throughout the program
+ * (i.e. not intended for importing outside of index.js!)
+ *
+ * Strongly referenced Medium article at:
+ * https://medium.com/yld-blog/handling-global-notifications-with-reacts-context-api-7d8135510d50
+ *
+ * Example usage for displaying alert:
+ *   import useAlert from '../hooks/userAlert'
+ *   const [ addAlert ] = useAlert()
+ *
+ *   // addAlert will automatically call this component and display a
+ *   // dismissible alert message
+ *   addAlert({
+ *     title: 'Info',
+ *     message: 'Test message',
+ *
+ *     // Controls style of the alert
+ *     // Same possible fields as Material UI's "Alert" severity:
+ *     // 'info', 'error', 'success', or 'warning'
+ *     severity: 'info',
+ *
+ *     // Controls how alert appears
+ *     // Can be 'snackbar' or 'dialog'
+ *     type: 'snackbar',
+ *   })
+ */
 
-import React, { useContext, useCallback, useState, useEffect } from 'react'
+import React, { useContext, useState, useEffect } from 'react'
 import { AlertContext } from './AlertProvider'
 import { Snackbar } from '@material-ui/core'
 import { Alert } from '@material-ui/lab'
