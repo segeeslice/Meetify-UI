@@ -56,6 +56,7 @@ export default function Login (props) {
       .catch((e) => {
         console.log(e)
         addAlert({text: 'Invalid username or password',
+                  type: 'snackbar',
                   severity: 'error'})
         setPassword('')
       })

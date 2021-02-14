@@ -2,6 +2,14 @@
  * File containing short utility methods for use across app
  */
 
+// e.g. capitalize('info') = 'Info'
+// e.g. capitalize('the onion') = 'The Onion'
+export const capitalize = (str) => {
+  return str.split()
+            .map(([firstLetter, ...restOfStr]) => firstLetter.toUpperCase() + restOfStr.join(''))
+            .join(' ')
+}
+
 export const getShortTime = (date) => {
   // Original format: [hour]:[minute]:[second] [timezone]
   const re = /[0-9]+:[0-9]+/

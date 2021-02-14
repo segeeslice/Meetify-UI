@@ -21,7 +21,7 @@ export default function AlertProvider({ children }) {
   const [alert, setAlert] = useState(null)
 
   const addAlert = useCallback(
-      ({title, text, severity}) => setAlert({title, text, severity}),
+      ({title, text, severity, type}) => setAlert({title, text, severity, type}),
       []
   )
   const removeAlert = useCallback(() => setAlert(null), [])
