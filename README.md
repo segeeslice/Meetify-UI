@@ -70,7 +70,7 @@ brief overview and educational tool for those visiting the project.
 
 <details>
 <summary>
-**Redux** *(currently used)*
+<strong>Redux</strong> <em>(currently used)</em>
 </summary>
 
 [Redux](https://redux.js.org/) is a data manager for react programs, creating a
@@ -90,7 +90,7 @@ simplest alternative we could consider would be React's own
 
 <details>
 <summary>
-**React: Using Hooks Over Classes**
+<strong>React: Using Hooks Over Classes</strong> <em>(currently used)</em>
 </summary>
 
 [React hooks](https://reactjs.org/docs/hooks-intro.html) are a relatively new
@@ -142,7 +142,7 @@ components should be utilized everywhere in the program.**
 
 <details>
 <summary>
-**TypeScript** *(not used)*
+<strong>TypeScript</strong> <em>(not used)</em>
 </summary>
 
 [TypeScript](https://www.typescriptlang.org/) is a JavaScript extension that
