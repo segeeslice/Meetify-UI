@@ -10,6 +10,11 @@ export const capitalize = (str) => {
             .join(' ')
 }
 
+// e.g. spaceCaps('HeyThere') = 'Hey There'
+export const spaceCaps = (str) => {
+  return str.match(/[A-Z][a-z]+/g).join(' ')
+}
+
 export const getShortTime = (date) => {
   // Original format: [hour]:[minute]:[second] [timezone]
   const re = /[0-9]+:[0-9]+/

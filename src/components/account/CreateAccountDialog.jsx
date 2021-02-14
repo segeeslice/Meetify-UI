@@ -5,11 +5,14 @@
 
 import React, { useState, useEffect } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
+
 import { signup } from '../../server'
+import useAlert from '../../hooks/useAlert'
 import {
   checkValidEmail,
   checkValidPassword,
   checkValidUsername,
+  spaceCaps,
 } from '../../util'
 
 import {
@@ -55,7 +58,6 @@ export default function EditProfileDialog(props) {
   const {
     open,
     onCancel,
-    onFail,
     onSuccess,
   } = props
 
@@ -70,6 +72,8 @@ export default function EditProfileDialog(props) {
   const [ emailChanged, setEmailChanged ] = useState(false)
   const [ passwordChanged, setPasswordChanged ] = useState(false)
   const [ passwordRepeatChanged, setPasswordRepeatChanged ] = useState(false)
+
+  const { addAlert } = useAlert()
 
   // Central location for field errors
   // If there's an error, should be set to error reason. Otherwise should be false
@@ -107,13 +111,20 @@ export default function EditProfileDialog(props) {
         onSuccess && onSuccess()
       })
       .catch((e) => {
-        // TODO: Set up a globally acessible error dialog to display this
-        console.error(e)
+        addAlert({
+          text: e.message || e,
+          title: (e.name && spaceCaps(e.name)) || null,
+          type: 'dialog',
+          severity: 'error',
+        })
 
-        setPassword('')
-        setPasswordRepeat('')
-        setPasswordChanged(false)
-        setPasswordRepeatChanged(false)
+        // Don't clear password if just a connection issue
+        if (!e.name || e.name !== 'CouldNotConnect') {
+          setPassword('')
+          setPasswordRepeat('')
+          setPasswordChanged(false)
+          setPasswordRepeatChanged(false)
+        }
       })
   }
 

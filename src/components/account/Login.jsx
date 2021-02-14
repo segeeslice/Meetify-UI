@@ -2,7 +2,7 @@
  * UI component for the opening login screen w/ welcome animation
  */
 
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useCallback, } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { CSSTransition } from 'react-transition-group'
 import { makeStyles } from '@material-ui/core/styles'
@@ -82,7 +82,14 @@ export default function Login (props) {
   })
 
   const onRegisterClick = () => setCreateDialogOpen(true)
-  const onCreateAccountSubmit = (obj) => setCreateDialogOpen(false)
+  const onRegisterSuccess = useCallback(() => {
+    setCreateDialogOpen(false)
+    addAlert({
+      text: 'Account successfully created!',
+      type: 'snackbar',
+      severity: 'success',
+    })
+  }, [ addAlert, setCreateDialogOpen ])
 
   // TODO: Move these to material-ui's makeStyle syntax
   const gridItemStyle = { textAlign: 'center', paddingBottom: '10px' }
@@ -204,9 +211,8 @@ export default function Login (props) {
 
       <CreateAccountDialog
         open={createDialogOpen}
+        onSuccess={onRegisterSuccess}
         onCancel={() => setCreateDialogOpen(false)}
-        onSuccess={() => setCreateDialogOpen(false)}
-        onFail={() => setCreateDialogOpen(false)}
       />
     </div>
   )

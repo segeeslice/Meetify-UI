@@ -106,15 +106,19 @@ export const signup = async ({ username, email, password }) => {
   }
 
   return axios.post(urlPath, dataToSend)
-    .then(async (r) => {
-      console.log(r)
-    }).catch((e) => {
-      if (e.response) {
-        if (e.response.status === 409) {
+    .catch((e) => {
+      if (e.hasOwnProperty('response')) {
+        if (!e.response) {
+          const newErr = Error('Please check your connection and try again.')
+          newErr.name = 'CouldNotConnect'
+          throw newErr
+
+        } else if (e.response.status === 409) {
           throw Error('Could not create account: That username is already taken!')
         }
+      } else {
+        throw e
       }
-      throw e
     })
 }
 
