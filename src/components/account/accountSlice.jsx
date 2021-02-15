@@ -21,10 +21,10 @@ export const accountSlice = createSlice({
   initialState: {
     loggedIn: false,
     username: '',
+    userId: -1,
     profile: {
       displayName: '',
       description: '',
-      status: '',
       profilePicUrl: '',
     }
   },
@@ -38,14 +38,26 @@ export const accountSlice = createSlice({
       //       (which should probably be async)
       state.profile = {...PROFILE_TEST_INFO}
     },
+    setUserId: (state, action) => {
+      state.userId = action.payload
+    },
+    setProfile: (state, action) => {
+      state.profile = action.payload
+    },
     editProfile: (state, action) => {
       // TODO: Send to server and receive again
       const { changes } = action.payload
       state.profile = { ...state.profile, ...changes }
       console.log(state.profile)
-    }
+    },
   }
 })
 
-export const { setLoggedIn, setUsername, editProfile } = accountSlice.actions
+export const {
+  setLoggedIn,
+  setUsername,
+  setUserId,
+  editProfile,
+  setProfile,
+} = accountSlice.actions
 export default accountSlice.reducer

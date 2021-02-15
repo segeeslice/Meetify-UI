@@ -15,6 +15,16 @@ export const spaceCaps = (str) => {
   return str.match(/[A-Z][a-z]+/g).join(' ')
 }
 
+// e.g. cleanEmptyKeys({nullVal: null, notNull: 3}) = {notNull: 3}
+export const cleanEmptyKeys = (obj) => {
+  const cleaned = {...obj}
+  for (let k in cleaned) {
+    if (cleaned[k] === null || cleaned[k] === undefined)
+      delete cleaned[k]
+  }
+  return cleaned
+}
+
 export const getShortTime = (date) => {
   // Original format: [hour]:[minute]:[second] [timezone]
   const re = /[0-9]+:[0-9]+/
