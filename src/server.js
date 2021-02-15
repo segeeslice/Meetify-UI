@@ -21,6 +21,7 @@ const SERVER_URL = 'http://localhost:8000'
 const ENDPOINTS = {
   login: ['user', 'login'],
   signup: ['user', 'signup'],
+  profile: ['user', '{id}', 'profile']
 }
 
 // Nabs any cookie (that's not http-only) from the browser
@@ -119,6 +120,29 @@ export const signup = async ({ username, email, password }) => {
         }
       } else {
         throw e
+      }
+    })
+}
+
+export const getProfile = async({ userId }) => {
+  const baseUrl = joinUrl(SERVER_URL, ...ENDPOINTS.profile)
+  const urlPath = baseUrl.replace('{id}', userId)
+
+  return axios.get(urlPath)
+    .then((r) => {
+      if (r.status >= 300)
+        throw Error(`Received status ${r.status} from server`)
+      else if (!r.data)
+        throw Error (`Received no profile data from server`)
+      else return {
+        displayName: r.data.DisplayName,
+        profilePicUrl: r.data.ProfilePic,
+        description: r.data.Description, // Not currently supported on server
+      }
+    }).catch((e) => {
+      console.error(e)
+    }).finally(() => {
+      return {
       }
     })
 }

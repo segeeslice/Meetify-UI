@@ -17,8 +17,8 @@ import {
 } from '@material-ui/core'
 import CreateAccountDialog from './CreateAccountDialog'
 
-import { login } from '../../server'
-import { setUsername, setUserId, setLoggedIn } from './accountSlice'
+import { login, getProfile } from '../../server'
+import { setUsername, setUserId, setLoggedIn, setProfile, } from './accountSlice'
 import { theme } from '../../theme'
 
 const TRANSITION_DURATION = 500
@@ -37,6 +37,7 @@ export default function Login (props) {
   const { addAlert } = useAlert()
 
   const username = useSelector(state => state.account.username)
+  const displayName = useSelector(state => state.account.profile.displayName)
   const [password, setPassword] = useState('')
 
   const [loginVisible, setLoginVisible] = useState(true)
@@ -47,17 +48,23 @@ export default function Login (props) {
 
   const onLoginClick = async () => {
     login({ username, password })
-      // Set username from server just to be sure
-      .then(({ username, userId }) => {
+
+      .then(async ({ username, userId }) => {
         dispatch(setUsername(username))
         dispatch(setUserId(userId))
+
+        return getProfile({ userId })
+      })
+
+      .then(({ displayName, profilePicUrl, description }) => {
+        dispatch(setProfile({ displayName, profilePicUrl, description }))
       })
 
       // Trigger login animation chain
       .then(() => setLoginVisible(false))
 
       .catch((e) => {
-        console.log(e)
+        console.error(e)
         addAlert({text: 'Invalid username or password',
                   type: 'snackbar',
                   severity: 'error'})
@@ -156,7 +163,7 @@ export default function Login (props) {
     <>
       <Grid item style={gridItemStyle}>
         <Typography variant='h3'>
-          Welcome, {username || 'user'}
+          Welcome, {displayName || username || 'user'}
         </Typography>
       </Grid>
     </>
