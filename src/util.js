@@ -10,6 +10,11 @@ export const capitalize = (str) => {
             .join(' ')
 }
 
+// e.g. spaceCaps('HeyThere') = 'Hey There'
+export const spaceCaps = (str) => {
+  return str.match(/[A-Z][a-z]+/g).join(' ')
+}
+
 export const getShortTime = (date) => {
   // Original format: [hour]:[minute]:[second] [timezone]
   const re = /[0-9]+:[0-9]+/
@@ -39,7 +44,16 @@ export const checkValidEmail = (email) => {
 // True if valid password
 // Do NOT check for symbols; UI should instead encourage long passwords
 export const checkValidPassword = (password) => {
-  const re = /(.){10,}$/
+  // TODO: Make lengths universal in central config doc
+  const re = /(.){10,128}$/
+  return re.test(password)
+}
+
+// True if valid username
+// Username considered valid if uses at least 5 letters, numbers, -, ., and/or _
+export const checkValidUsername = (username) => {
   // TODO: Make max lengths universal in central config doc
-  return re.test(password) && password.length <= 128
+  // TODO: Run different regexes and return exact error from here?
+  const re = /^([a-zA-Z0-9\-_.])*$/
+  return re.test(username) && username.length >= 5 && username.length <= 128
 }
