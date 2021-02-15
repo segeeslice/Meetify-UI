@@ -11,10 +11,13 @@ import {
   checkValidUsername,
   checkValidEmail,
   checkValidPassword,
+  cleanEmptyKeys,
 } from './util'
 
 // Always send with credentials to ensure cookies are sent/received
 axios.defaults.withCredentials = true
+
+// === CONSTANTS ===
 
 const SERVER_URL = 'http://localhost:8000'
 
@@ -23,6 +26,8 @@ const ENDPOINTS = {
   signup: ['user', 'signup'],
   profile: ['user', '{id}', 'profile']
 }
+
+// === UTIL METHODS ===
 
 // Nabs any cookie (that's not http-only) from the browser
 // https://stackoverflow.com/questions/50732815/how-to-use-csrf-token-in-django-restful-api-and-react
@@ -44,6 +49,8 @@ const getCookie = (name) => {
 export const getCsrfToken = () => getCookie('csrftoken')
 export const getSessionId = () => getCookie('sessionid')
 
+// TODO: Central "handleResponse" message to parse axios responses
+
 // joinUrl('www.some.link', 'sub', 'path') = 'www.some.link/sub/path'
 const joinUrl = (URL, ...args) => {
   return URL + (URL.endsWith('/') ? '' : '/') + args.join('/')
@@ -54,6 +61,8 @@ const joinUrl = (URL, ...args) => {
 const getUrlQuery = (o) => {
   return '?' + Object.keys(o).map(k => `${k}=${o[k]}`).join('&')
 }
+
+// === EXPORTED METHODS ===
 
 export const getPlaylistIntersect = (userId1, userId2) => {
   const query = getUrlQuery({ target: userId1, target2: userId2 })
@@ -137,12 +146,53 @@ export const getProfile = async({ userId }) => {
       else return {
         displayName: r.data.DisplayName,
         profilePicUrl: r.data.ProfilePic,
-        description: r.data.Description, // Not currently supported on server
+        description: r.data.Description,
       }
     }).catch((e) => {
-      console.error(e)
-    }).finally(() => {
-      return {
+      throw e
+    })
+}
+
+export const editProfile = async({ userId, changes }) => {
+  const baseUrl = joinUrl(SERVER_URL, ...ENDPOINTS.profile)
+  const urlPath = baseUrl.replace('{id}', userId)
+
+  const {
+    description,
+    displayName,
+    profilePicUrl,
+  } = changes
+
+  const dataToSend = cleanEmptyKeys({
+    Description: description,
+    DisplayName: displayName,
+    ProfilePic: profilePicUrl,
+  })
+
+  return axios.post(urlPath, dataToSend)
+    .then((r) => {
+      console.log(r)
+      if (r.status >= 300)
+        throw Error(`Received status ${r.status} from server`)
+      else if (!r.data)
+        throw Error (`Received no profile data from server`)
+      else return {
+        displayName: r.data.DisplayName,
+        profilePicUrl: r.data.ProfilePic,
+        description: r.data.Description,
+      }
+    })
+    .catch((e) => {
+      if (e.hasOwnProperty('response')) {
+        if (!e.response) {
+          const newErr = Error('Please check your connection and try again.')
+          newErr.name = 'CouldNotConnect'
+          throw newErr
+        } else if (e.response.status === 401) {
+          throw Error('Could not update. Please login and try again.')
+        }
+      } else {
+        throw e
       }
     })
 }

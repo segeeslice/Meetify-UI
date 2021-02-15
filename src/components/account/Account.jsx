@@ -13,8 +13,11 @@
  */
 
 import React, { useCallback, useState } from 'react'
-import { useDispatch } from 'react-redux'
-import { editProfile } from './accountSlice'
+import { useDispatch, useSelector } from 'react-redux'
+import useAlert from '../../hooks/useAlert'
+
+import { setProfile } from './accountSlice'
+import { getProfile, editProfile } from '../../server'
 
 import {
   Button,
@@ -46,7 +49,9 @@ const PROFILE_IMG_SIZE = theme.images.squareImageHeight
 
 // TODO: Rename to Profile (account settings could & should be separate!)
 export default function Account (props) {
+  const userId = useSelector(state => state.account.userId)
   const dispatch = useDispatch()
+  const { addAlert } = useAlert()
 
   const {
     username,
@@ -58,14 +63,28 @@ export default function Account (props) {
 
   const openEditDialog = useCallback(() => {
     setEditDialogOpen(true)
-  }, [setEditDialogOpen])
+  }, [])
   const onEditDialogCancel = useCallback(() => {
     setEditDialogOpen(false)
-  }, [setEditDialogOpen])
+  }, [])
   const onEditDialogSave = useCallback((changes) => {
-    dispatch(editProfile({ changes }))
-    setEditDialogOpen(false)
-  }, [dispatch, setEditDialogOpen])
+    editProfile({ userId, changes })
+      .then((profile) => dispatch(setProfile(profile)))
+      .then(() => setEditDialogOpen(false))
+      .then(() => addAlert({
+        text: 'Profile updated',
+        severity: 'success',
+        type: 'snackbar',
+      }))
+      .catch((e) => {
+        addAlert({
+          title: e.name,
+          text: e.message || 'Could not profile. Please try again.',
+          severity: 'error',
+          type: 'dialog',
+        })
+      })
+  }, [userId, dispatch, addAlert])
 
   const Header = (() => (
     <Card style={{width: '100%', background: HEADER_GRADIENT}}>
@@ -88,12 +107,6 @@ export default function Account (props) {
               {/* TODO: Handle very long display names? */}
               <Typography variant="h5">
                 {profile.displayName}
-              </Typography>
-              <Typography variant="subtitle1" style={{color: theme.palette.text.hint}}>
-                {username}
-              </Typography>
-              <Typography variant="subtitle1" style={{color: theme.palette.text.hint}}>
-                {profile.status}
               </Typography>
             </div>
             {editable &&
