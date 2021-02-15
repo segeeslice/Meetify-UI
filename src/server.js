@@ -7,13 +7,20 @@
 import axios from 'axios'
 import jQuery from 'jquery'
 
+import {
+  checkValidUsername,
+  checkValidEmail,
+  checkValidPassword,
+} from './util'
+
 // Always send with credentials to ensure cookies are sent/received
 axios.defaults.withCredentials = true
 
 const SERVER_URL = 'http://localhost:8000'
 
 const ENDPOINTS = {
-  login: ['user', 'login']
+  login: ['user', 'login'],
+  signup: ['user', 'signup'],
 }
 
 // Nabs any cookie (that's not http-only) from the browser
@@ -59,7 +66,8 @@ export const getPlaylistIntersect = (userId1, userId2) => {
     })
 }
 
-export const login = ({ username, email, password }) => {
+// NOTE: Currently doesn't use email... should allow either in the future?
+export const login = async ({ username, email, password }) => {
   const urlPath = joinUrl(SERVER_URL, ...ENDPOINTS.login)
   const dataToSend = {
     Username: username,
@@ -77,6 +85,40 @@ export const login = ({ username, email, password }) => {
       }
     }).catch((e) => {
       throw e
+    })
+}
+
+export const signup = async ({ username, email, password }) => {
+  if (!checkValidUsername(username)) throw Error (`Invalid registration username: ${email}`)
+  if (!checkValidEmail(email)) throw Error (`Invalid registration email: ${email}`)
+  if (!checkValidPassword(password)) throw Error (`Invalid registration email`)
+
+  const urlPath = joinUrl(SERVER_URL, ...ENDPOINTS.signup)
+  const defaultDisplayName = email.split('@')[0]
+
+  const dataToSend = {
+    Username: username,
+    Email: email,
+    Password: password,
+    DisplayName: defaultDisplayName,
+    ZipCode: null,
+    ProfilePic: null,
+  }
+
+  return axios.post(urlPath, dataToSend)
+    .catch((e) => {
+      if (e.hasOwnProperty('response')) {
+        if (!e.response) {
+          const newErr = Error('Please check your connection and try again.')
+          newErr.name = 'CouldNotConnect'
+          throw newErr
+
+        } else if (e.response.status === 409) {
+          throw Error('Could not create account: That username is already taken!')
+        }
+      } else {
+        throw e
+      }
     })
 }
 
