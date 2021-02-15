@@ -78,10 +78,11 @@ export const login = async ({ username, email, password }) => {
     .then(async (r) => {
       if (r.status >= 300)
         throw Error(`Received status ${r.status} from server`)
-      else if (!r.data || !r.data.fields)
+      else if (!r.data)
         throw Error (`Received no data from server`)
       else return {
-        username: r.data.fields.username
+        username: r.data.username,
+        userId: r.data.id,
       }
     }).catch((e) => {
       throw e

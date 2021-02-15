@@ -18,7 +18,7 @@ import {
 import CreateAccountDialog from './CreateAccountDialog'
 
 import { login } from '../../server'
-import { setUsername, setLoggedIn } from './accountSlice'
+import { setUsername, setUserId, setLoggedIn } from './accountSlice'
 import { theme } from '../../theme'
 
 const TRANSITION_DURATION = 500
@@ -48,7 +48,10 @@ export default function Login (props) {
   const onLoginClick = async () => {
     login({ username, password })
       // Set username from server just to be sure
-      .then(({ username }) => dispatch(setUsername(username)))
+      .then(({ username, userId }) => {
+        dispatch(setUsername(username))
+        dispatch(setUserId(userId))
+      })
 
       // Trigger login animation chain
       .then(() => setLoginVisible(false))
