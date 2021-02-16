@@ -1,6 +1,7 @@
 # Meetify Front-end
 
-**Current version:** 0.2.0
+**Current version:** [0.2.0](https://github.com/segeeslice/Meetify-UI/releases/tag/v0.2.0)  
+**[All releases](https://github.com/segeeslice/Meetify-UI/releases)**
 
 This repository contains all the code for the **front-end** application(s) for
 interacting with the online services of the Meetify project.
@@ -22,15 +23,15 @@ technologies:
 - Desktop: [**Electron**](https://www.electronjs.org/)
 - Android/iOS (**WIP**): [**React Native**](https://reactnative.dev/)
 
-## Install
+## Dev Install
 
 1. Install [NodeJS](https://nodejs.org/en/)
 1. Open a terminal and `cd` to `front_end/`
 1. Run `npm install`
 
-## Usage
+## Dev Usage
 
-### Dev environment
+### Running Dev Environment
 
  ``` sh
 # Website:
