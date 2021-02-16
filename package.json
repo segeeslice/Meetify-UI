@@ -1,6 +1,8 @@
 {
   "name": "meetify",
   "version": "0.2.0",
+  "description": "Application for meeting new people based on your music interests (via Spotify)",
+  "author": "Dustin Seger",
   "private": true,
   "main": "./public/electron.js",
   "homepage": "./",
@@ -12,6 +14,7 @@
     "@testing-library/react": "^9.5.0",
     "@testing-library/user-event": "^7.2.1",
     "axios": "^0.21.1",
+    "electron-is-dev": "^1.2.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-redux": "^7.2.2",
@@ -25,8 +28,9 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "electron:serve": "concurrently \"npm run website:serve\" \"wait-on http://localhost:3000 && electron .\"",
-    "electron:build": "npm run website:build && node_modules/.bin/build"
+    "electron:build": "npm run website:build && electron-builder"
   },
+  "postInstall": "electron-builder install-app-deps",
   "eslintConfig": {
     "extends": "react-app"
   },
@@ -45,9 +49,17 @@
   "devDependencies": {
     "concurrently": "^5.3.0",
     "electron": "^11.1.1",
-    "electron-builder": "^22.8.1",
-    "electron-is-dev": "^1.2.0",
+    "electron-builder": "^22.9.1",
     "typescript": "^4.1.3",
     "wait-on": "^5.2.1"
+  },
+  "build": {
+    "appId": "meetify.ui",
+    "productName": "Meetify",
+    "extends": null,
+    "files": [
+      "build/**",
+      "public/**"
+    ]
   }
 }
