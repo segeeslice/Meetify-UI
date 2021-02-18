@@ -1,6 +1,7 @@
 /*
  * Dialog with fields for creating a new user account a user's profile
- * Events/data must be handled in parent
+ * Communicates with server in-house
+ *
  */
 
 import React, { useState, useEffect } from 'react'
@@ -27,38 +28,19 @@ const useStyles = makeStyles((theme) => ({
     minWidth: 600,
     paddingTop: theme.spacing(2)
   },
-  cancelButton: {
-    // background: theme.palette.error.dark,
-    color: theme.palette.error.light,
-  },
-  saveButton: {
-    // background: theme.palette.primary.dark,
-    color: theme.palette.primary.light,
-  },
   editableMargin: {
     marginTop: theme.spacing(2)
-  },
-  avatarRow: {
-    display: 'flex',
-    alignItems: 'center',
-  },
-  avatarTextField: {
-    marginLeft: theme.spacing(2),
-  },
-  avatar: {
-    width: theme.spacing(6),
-    height: theme.spacing(6),
   },
   hintText: {
     color: theme.palette.text.hint
   },
 }))
 
-export default function EditProfileDialog(props) {
+export default function CreateAccountDialog(props) {
   const {
-    open,
-    onCancel,
-    onSuccess,
+    open,      // True if dialog open
+    onCancel,  // Method to call on user cancel
+    onSuccess, // Method to call on successful account creation
   } = props
 
   const classes = useStyles()
@@ -107,7 +89,7 @@ export default function EditProfileDialog(props) {
 
   const onSubmit = () => {
     signup({username, email, password,})
-      .then((r) => {
+      .then(() => {
         onSuccess && onSuccess()
       })
       .catch((e) => {

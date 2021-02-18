@@ -22,6 +22,9 @@ export const accountSlice = createSlice({
     loggedIn: false,
     username: '',
     userId: -1,
+    spotify: {
+      linked: false,
+    },
     profile: {
       displayName: '',
       description: '',
@@ -50,6 +53,9 @@ export const accountSlice = createSlice({
       state.profile = { ...state.profile, ...changes }
       console.log(state.profile)
     },
+    setSpotifyLinked: (state, action) => {
+      state.spotify.linked = action.payload
+    },
   }
 })
 
@@ -59,5 +65,6 @@ export const {
   setUserId,
   editProfile,
   setProfile,
+  setSpotifyLinked,
 } = accountSlice.actions
 export default accountSlice.reducer

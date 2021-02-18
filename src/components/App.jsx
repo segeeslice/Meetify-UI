@@ -4,10 +4,12 @@
 
 import React, { useState, useRef } from 'react'
 import { CSSTransition } from 'react-transition-group'
-import { Tab, Paper } from '@material-ui/core'
 import { useSelector } from 'react-redux'
+import { makeStyles } from '@material-ui/core/styles'
 
-import VerticalTabBar from './VerticalTabBar'
+import { Tab, Paper } from '@material-ui/core'
+
+import AppTabBar from './AppTabBar'
 import Login from './account/Login'
 
 import Meet from './meet/Meet'
@@ -19,7 +21,17 @@ import './App.css'
 
 const TRANSITION_DURATION = 500
 
+const useStyles = makeStyles((theme) => ({
+  tabBar: {
+    float: 'left',
+    maxWidth: '25%',
+    height: '100%',
+  },
+}))
+
 export default function App () {
+  const classes = useStyles()
+
   const loggedIn = useSelector((state) => state.account.loggedIn)
   const username = useSelector((state) => state.account.username)
   const profile = useSelector((state) => state.account.profile)
@@ -62,9 +74,11 @@ export default function App () {
 
   const mainAppComp = (
     <>
-      <VerticalTabBar className="tab-bar" activeIndex={componentIndex}>
-        {tabs}
-      </VerticalTabBar>
+      <div className={classes.tabBar}>
+        <AppTabBar activeIndex={componentIndex}>
+          {tabs}
+        </AppTabBar>
+      </div>
       <div className="main-container">
         {component}
       </div>

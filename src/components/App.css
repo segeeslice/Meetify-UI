@@ -6,12 +6,6 @@
     padding: 0;
 }
 
-.tab-bar {
-    height: 100%;
-    float: left;
-    max-width: 25%
-}
-
 .main-container {
     height: 100%;
     width: 100%;
