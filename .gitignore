@@ -9,7 +9,7 @@
 /coverage
 
 # production
-/build
+# /build #temp disable for DB testing stuff
 
 # misc
 .DS_Store
