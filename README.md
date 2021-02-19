@@ -26,7 +26,7 @@ technologies:
 ## Dev Install
 
 1. Install [NodeJS](https://nodejs.org/en/)
-1. Open a terminal and `cd` to `front_end/`
+1. Open a terminal in the root project directory.
 1. Run `npm install`
 
 ## Dev Usage
