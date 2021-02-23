@@ -81,7 +81,7 @@ export default function AlertNotification () {
       open={open}
       onClose={() => setOpen(false)}
       onExited={() => removeAlert()}
-      maxWidth="md"
+      maxWidth="sm"
     >
       <Alert
         severity={alertDefaulted.severity}

@@ -17,8 +17,19 @@ import {
 } from '@material-ui/core'
 import CreateAccountDialog from './CreateAccountDialog'
 
-import { login, getProfile } from '../../server'
-import { setUsername, setUserId, setLoggedIn, setProfile, } from './accountSlice'
+import {
+  login,
+  getProfile,
+  checkSpotifyLinked,
+} from '../../server'
+import {
+  setUsername,
+  setUserId,
+  setLoggedIn,
+  setProfile,
+  setSpotifyLinked,
+} from './accountSlice'
+
 import { theme } from '../../theme'
 
 const TRANSITION_DURATION = 500
@@ -47,17 +58,29 @@ export default function Login (props) {
   const [createDialogOpen, setCreateDialogOpen] = useState(false)
 
   const onLoginClick = async () => {
+    let retrievedUserId = null
+
     login({ username, password })
 
+       // Set basic account info in store
       .then(async ({ username, userId }) => {
+        retrievedUserId = userId
+
         dispatch(setUsername(username))
         dispatch(setUserId(userId))
 
-        return getProfile({ userId })
+        return getProfile({ userId: retrievedUserId })
       })
 
+      // Set profile info in store
       .then(({ displayName, profilePicUrl, description }) => {
         dispatch(setProfile({ displayName, profilePicUrl, description }))
+        return checkSpotifyLinked ({ userId: retrievedUserId })
+      })
+
+      // Check if Spotify account associated
+      .then(({ spotifyLinked }) => {
+        dispatch(setSpotifyLinked(spotifyLinked))
       })
 
       // Trigger login animation chain
@@ -93,12 +116,12 @@ export default function Login (props) {
 
   const onRegisterClick = () => setCreateDialogOpen(true)
   const onRegisterSuccess = useCallback(() => {
-    setCreateDialogOpen(false)
     addAlert({
       text: 'Account successfully created!',
-      type: 'snackbar',
       severity: 'success',
+      type: 'snackbar',
     })
+    setCreateDialogOpen(false)
   }, [ addAlert, setCreateDialogOpen ])
 
   // TODO: Move these to material-ui's makeStyle syntax

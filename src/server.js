@@ -24,8 +24,14 @@ const SERVER_URL = 'http://localhost:8000'
 const ENDPOINTS = {
   login: ['user', 'login'],
   signup: ['user', 'signup'],
-  profile: ['user', '{id}', 'profile']
+  profile: ['user', '{id}', 'profile'],
+  linkSpotifyAccount: ['user', 'link-account'],
+  checkSpotifyLinked: ['user', 'is-linked'],
 }
+
+// === INTERVAL(S) ===
+
+let spotifyLinkedInterval = null
 
 // === UTIL METHODS ===
 
@@ -117,6 +123,7 @@ export const signup = async ({ username, email, password }) => {
   }
 
   return axios.post(urlPath, dataToSend)
+    .then((r) => ({}))
     .catch((e) => {
       if (e.hasOwnProperty('response')) {
         if (!e.response) {
@@ -195,6 +202,86 @@ export const editProfile = async({ userId, changes }) => {
         throw e
       }
     })
+}
+
+export const linkSpotifyAccount = async ({ userId }) => {
+  const urlPath = joinUrl(SERVER_URL, ...ENDPOINTS.linkSpotifyAccount)
+
+  return axios.post(urlPath)
+    .then((r) => {
+      if (r.status >= 300)
+        throw Error(`Received status ${r.status} from serer`)
+      else if (!r.data)
+        throw Error(`Received no Spotify link URL from server`)
+      else return {
+        url: r.data
+      }
+    })
+    .catch((e) => {
+      throw e
+    })
+}
+
+export const checkSpotifyLinked = async ({ userId }) => {
+  const urlPath = joinUrl(SERVER_URL, ...ENDPOINTS.checkSpotifyLinked)
+
+  return axios.get(urlPath)
+    .then((r) => {
+      if (r.status >= 300)
+        throw Error(`Received status ${r.status} from serer`)
+      else if (!r.data || r.data.IsLinked === null || r.data.IsLinked === undefined)
+        throw Error(`Received no Spotify link check from server`)
+      else return {
+        spotifyLinked: r.data.IsLinked
+      }
+    })
+    .catch((e) => {
+      throw e
+    })
+}
+
+// Gives access to two methods for repeatedly checking for Spotify link status
+// To be used in tandem with the link at linkSpotifyAccount()
+export const waitUntilSpotifyLinked = {
+  start: async ({ userId }) => {
+    clearInterval(spotifyLinkedInterval)
+
+    let iters = 0
+    const maxIters = 100
+    const delay = 2000
+
+    return new Promise ((resolve, reject) => {
+      spotifyLinkedInterval = setInterval(() => {
+        // Log on each iteration just to be 200% sure we stop this interval
+        console.log('Checking if Spotify linked...')
+
+        if (!spotifyLinkedInterval) reject('Cancelled')
+
+        checkSpotifyLinked({ userId })
+          .then(({spotifyLinked}) => {
+            if (spotifyLinked === true) {
+              clearInterval(spotifyLinkedInterval)
+              resolve({ spotifyLinked })
+
+            } else {
+              iters = iters + 1
+
+              if (iters > maxIters) {
+                clearInterval(spotifyLinkedInterval)
+                reject('Timed out')
+              }
+            }
+          })
+          .catch((e) => {
+            clearInterval(spotifyLinkedInterval)
+            reject(e)
+          })
+      }, delay)
+    })
+  },
+  stop: () => {
+    clearInterval(spotifyLinkedInterval)
+  },
 }
 
 // TODO: Test db here to actually apply changes
