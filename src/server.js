@@ -207,7 +207,7 @@ export const editProfile = async({ userId, changes }) => {
 export const linkSpotifyAccount = async ({ userId }) => {
   const urlPath = joinUrl(SERVER_URL, ...ENDPOINTS.linkSpotifyAccount)
 
-  return axios.post(urlPath)
+  return axios.get(urlPath)
     .then((r) => {
       if (r.status >= 300)
         throw Error(`Received status ${r.status} from serer`)
