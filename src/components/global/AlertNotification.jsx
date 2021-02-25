@@ -48,21 +48,43 @@ export default function AlertNotification () {
   // Ensures no visual glitches when clearing alert
   const [ open, setOpen ] = useState(false)
 
-  // When an alert is given, open the notification
+  // Manage a queue of alerts, should multiple occur one after another
+  //
+  // List state management can require a lot of re-renders, so this is managed
+  // here as opposed to within AlertProvider to contain re-renders within this
+  // component, as opposed to potentially propogating them app-wide
+  const [ alertQueue, setAlertQueue ] = useState([])
+
+  // Watch for new alerts and add them to the queue
   useEffect(() => {
-    if (alert) setOpen(true)
-  }, [alert, setOpen])
+    if (alert && !alertQueue.includes(alert)) {
+      removeAlert(alert)
+      setAlertQueue([...alertQueue, alert])
+    }
+  }, [alert, alertQueue, removeAlert])
 
-  // Exit early if no alert to avoid a million null checks
-  if (!alert) return <div/>
+  // Open alert when the alertQueue gets new items
+  useEffect(() => {
+    if (alertQueue.length > 0) {
+      setOpen(true)
+    }
+  }, [alertQueue, setOpen])
 
-  // Inject default values into alert in case they're not given
-  const severity = (SEVERITIES.includes(alert.severity) && alert.severity) || 'info'
+  // Close animation complete; `open` already false
+  // Remove item from alert queue
+  const onExited = () => {
+    setAlertQueue(alertQueue.slice(1))
+  }
+
+  if (alertQueue.length === 0) return <div/>
+  const displayedAlert = alertQueue[0]
+
+  const severity = (SEVERITIES.includes(displayedAlert.severity) && displayedAlert.severity) || 'info'
   const alertDefaulted = {
     severity: severity,
-    title: alert.title || capitalize(severity),
-    text: alert.text || '(no details)',
-    type: ['dialog', 'snackbar'].includes(alert.type) ? alert.type : 'snackbar',
+    title: displayedAlert.title || capitalize(severity),
+    text: displayedAlert.text || '(no details)',
+    type: ['dialog', 'snackbar'].includes(displayedAlert.type) ? displayedAlert.type : 'snackbar',
   }
 
   return alertDefaulted.type === 'snackbar' ? (
@@ -70,7 +92,7 @@ export default function AlertNotification () {
       autoHideDuration={6000}
       open={open}
       onClose={() => setOpen(false)}
-      onExited={() => removeAlert()}
+      onExited={onExited}
       color="error"
     >
       <Alert
@@ -84,7 +106,7 @@ export default function AlertNotification () {
     <Dialog
       open={open}
       onClose={() => setOpen(false)}
-      onExited={() => removeAlert()}
+      onExited={onExited}
       maxWidth="sm"
     >
       <Alert
