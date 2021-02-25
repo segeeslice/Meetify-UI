@@ -37,6 +37,10 @@ import { Alert, AlertTitle } from '@material-ui/lab'
 
 import { capitalize } from '../../util'
 
+const SEVERITIES = [
+  'success', 'info', 'warning', 'error',
+]
+
 export default function AlertNotification () {
   const { alert, removeAlert } = useContext(AlertContext)
 
@@ -53,7 +57,7 @@ export default function AlertNotification () {
   if (!alert) return <div/>
 
   // Inject default values into alert in case they're not given
-  const severity = alert.severity || 'info'
+  const severity = (SEVERITIES.includes(alert.severity) && alert.severity) || 'info'
   const alertDefaulted = {
     severity: severity,
     title: alert.title || capitalize(severity),
