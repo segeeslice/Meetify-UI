@@ -38,7 +38,7 @@ import { Alert, AlertTitle } from '@material-ui/lab'
 import { capitalize } from '../../util'
 
 export default function AlertNotification () {
-  const { alert, removeAlert } = useContext(AlertContext)
+  const { alerts, removeAlert } = useContext(AlertContext)
 
   // Tie opening to separate variable as opposed to using alert itself
   // Ensures no visual glitches when clearing alert
@@ -46,11 +46,14 @@ export default function AlertNotification () {
 
   // When an alert is given, open the notification
   useEffect(() => {
-    if (alert) setOpen(true)
-  }, [alert, setOpen])
+    if (alerts && alerts.length > 0) setOpen(true)
+  }, [alerts, setOpen])
 
   // Exit early if no alert to avoid a million null checks
-  if (!alert) return <div/>
+  if (!alerts || alerts.length === 0) return <div/>
+
+  // Get top alert
+  const alert = alerts[0]
 
   // Inject default values into alert in case they're not given
   const severity = alert.severity || 'info'

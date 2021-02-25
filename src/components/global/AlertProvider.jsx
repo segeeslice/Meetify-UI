@@ -12,22 +12,26 @@
 import React, { useState, useCallback } from 'react';
 
 export const AlertContext = React.createContext({
-  alert: null, // { title, text, severity }
+  alerts: [], // { title, text, severity }
   addAlert: () => {},
   removeAlert: () => {},
 })
 
 export default function AlertProvider({ children }) {
-  const [alert, setAlert] = useState(null)
+  const [alerts, setAlerts] = useState([])
 
-  const addAlert = useCallback(
-      ({title, text, severity, type}) => setAlert({title, text, severity, type}),
-      []
-  )
-  const removeAlert = useCallback(() => setAlert(null), [])
+  // NOTE: may want to watch these methods performance-wise, as every time "alert"
+  // changes, so does the method, meaning we *may* be triggering mass
+  // re-renders...
+  const addAlert = useCallback(({title, text, severity, type}) => {
+    setAlerts([...alerts, {title, text, severity, type}])
+  }, [alerts, setAlerts])
+  const removeAlert = useCallback(() => {
+    setAlerts(alerts.slice(0, -1))
+  }, [alerts])
 
   const context = {
-    alert,
+    alerts,
     addAlert,
     removeAlert,
   }
