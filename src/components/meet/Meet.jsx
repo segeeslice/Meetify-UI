@@ -8,7 +8,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import useAlert from '../../hooks/useAlert'
 import { makeStyles } from '@material-ui/core/styles'
 
-import { findMatches, clearMatches, setMatches } from './meetSlice'
+import { clearMatches, setMatches } from './meetSlice'
 import { getPotentialMatches } from '../../server'
 
 import {
@@ -53,7 +53,6 @@ export default function Meet () {
   const dispatch = useDispatch()
   const { addAlert } = useAlert()
   const matches = useSelector(state => state.meet.matches)
-  const currentUser = useSelector(state => state.account.username)
 
   const matchesPresent = matches && matches.length > 0
   const [showMatches, setShowMatches] = useState(matchesPresent)
@@ -145,7 +144,7 @@ export default function Meet () {
       inMeetMode
       matches={matches}
       loading={searching}
-      onRefreshClick={onRefreshClick} // TODO
+      onRefreshClick={onRefreshClick}
       onCloseClick={() => {}}   // TODO
     />
   )

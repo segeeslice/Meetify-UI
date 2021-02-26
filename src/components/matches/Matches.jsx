@@ -9,7 +9,7 @@ import React, { useEffect, useState, useCallback } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import useAlert from '../../hooks/useAlert'
 
-import { loadMatches, setMatches } from './matchesSlice'
+import { setMatches } from './matchesSlice'
 import { getAcceptedMatches } from '../../server'
 
 import MatchesView from './MatchesView'
@@ -18,7 +18,6 @@ export default function Matches (props) {
   const dispatch = useDispatch()
   const { addAlert } = useAlert()
 
-  const currentUser = useSelector((state) => state.account.username)
   const matches = useSelector((state) => state.matches.matches)
 
   const [ loading, setLoading ] = useState(false)

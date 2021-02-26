@@ -12,7 +12,6 @@ import { useSelector, useDispatch } from 'react-redux'
 import { makeStyles } from '@material-ui/core/styles'
 
 import { sendMessage } from '../../../server'
-import { loadMatches } from '../../matches/matchesSlice'
 
 import { TextField, IconButton} from '@material-ui/core'
 import SendIcon from '@material-ui/icons/Send'
@@ -55,7 +54,7 @@ export default function ChatInput (props) {
       text: text,
     })
     // Reload messages from server to ensure we're seeing it properly
-      .then(() => dispatch(loadMatches()))
+      // .then(() => dispatch(loadMatches()))
       .finally(() => {
         setText('')
       })
