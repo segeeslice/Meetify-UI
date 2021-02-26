@@ -28,6 +28,7 @@ const ENDPOINTS = {
   linkSpotifyAccount: ['user', 'link-account'],
   checkSpotifyLinked: ['user', 'is-linked'],
   getPotentialMatches: ['matching', 'potential-matches'],
+  getAcceptedMatches: ['matching', 'accepted-matches'],
 }
 
 // === INTERVAL(S) ===
@@ -285,10 +286,10 @@ export const waitUntilSpotifyLinked = {
   },
 }
 
-export const getPotentialMatches = () => {
-  const urlPath = joinUrl(SERVER_URL, ...ENDPOINTS.getPotentialMatches)
-
-  return axios.get(urlPath)
+// Central point of interface for getPotentialMatches and getAcceptedMatches,
+// given their similarities
+const getMatches = (url) => {
+  return axios.get(url)
     .then((r) => {
       if (r.status >= 300)
         throw Error(`Received status ${r.status} from serer`)
@@ -301,6 +302,20 @@ export const getPotentialMatches = () => {
     })
     .catch((e) => {
       throw e
+    })
+}
+
+export const getPotentialMatches = () => {
+  const urlPath = joinUrl(SERVER_URL, ...ENDPOINTS.getPotentialMatches)
+  return getMatches(urlPath)
+}
+
+export const getAcceptedMatches = () => {
+  const urlPath = joinUrl(SERVER_URL, ...ENDPOINTS.getAcceptedMatches)
+  return getMatches(urlPath)
+    .then(async (users) => {
+      // TODO: Integrate chat with server; set empty for now
+      return users.map(u => ({ ...u, messages: [] }))
     })
 }
 
