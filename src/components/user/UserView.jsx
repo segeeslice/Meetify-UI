@@ -52,6 +52,9 @@ const useStyles = makeStyles((theme) => ({
   title: {
     flexGrow: 1,
   },
+  hintText: {
+    color: theme.palette.text.hint
+  },
 }))
 
 export default function UserView (props) {
@@ -77,16 +80,21 @@ export default function UserView (props) {
   }, {
     val: 'songs',
     icon: <SongsIcon/>,
-    component: songs.map((row, index) => (
-      <div className={classes.songTile} key={index}>
-        <SongTile
-          song={row.song}
-          artist={row.artist}
-      /* album={row.album} */
-          albumArtUrl={row.albumArtUrl}
-        />
-      </div>
-    )),
+    component: !songs || songs.length === 0
+      ?
+      <Typography variant="subtitle1" className={classes.hintText}>
+        No matching songs found
+      </Typography>
+      :
+      songs.map((row, index) => (
+        <div className={classes.songTile} key={index}>
+          <SongTile
+            song={row.song}
+            artist={row.artist}
+            albumArtUrl={row.albumArtUrl}
+          />
+        </div>
+      )),
   }, {
     val: 'chat',
     icon: <ChatIcon/>,
