@@ -27,6 +27,7 @@ const ENDPOINTS = {
   profile: ['user', '{id}', 'profile'],
   linkSpotifyAccount: ['user', 'link-account'],
   checkSpotifyLinked: ['user', 'is-linked'],
+  getPotentialMatches: ['matching', 'potential-matches'],
 }
 
 // === INTERVAL(S) ===
@@ -282,6 +283,25 @@ export const waitUntilSpotifyLinked = {
   stop: () => {
     clearInterval(spotifyLinkedInterval)
   },
+}
+
+export const getPotentialMatches = () => {
+  const urlPath = joinUrl(SERVER_URL, ...ENDPOINTS.getPotentialMatches)
+
+  return axios.get(urlPath)
+    .then((r) => {
+      if (r.status >= 300)
+        throw Error(`Received status ${r.status} from serer`)
+      else if (!r.data)
+        throw Error(`Received no match from server`)
+      else return Promise.all(r.data.map(m => getProfile({ userId: m['matched_with'] })))
+    })
+    .then(async (profiles) => {
+      return profiles.map(p => ({ profile: p }))
+    })
+    .catch((e) => {
+      throw e
+    })
 }
 
 // TODO: Test db here to actually apply changes
