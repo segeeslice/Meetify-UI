@@ -23,7 +23,7 @@ export const accountSlice = createSlice({
     username: '',
     profile: {
       displayName: '',
-      description: '',
+      description: 'Your profile description',
       status: '',
       profilePicUrl: '',
     }
