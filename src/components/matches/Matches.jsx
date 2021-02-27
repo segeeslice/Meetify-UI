@@ -7,14 +7,17 @@
 
 import React, { useEffect, useState, useCallback } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { loadMatches } from './matchesSlice'
+import useAlert from '../../hooks/useAlert'
+
+import { setMatches } from './matchesSlice'
+import { getAcceptedMatches } from '../../server'
 
 import MatchesView from './MatchesView'
 
 export default function Matches (props) {
   const dispatch = useDispatch()
+  const { addAlert } = useAlert()
 
-  const currentUser = useSelector((state) => state.account.username)
   const matches = useSelector((state) => state.matches.matches)
 
   const [ loading, setLoading ] = useState(false)
@@ -23,10 +26,23 @@ export default function Matches (props) {
   // https://dmitripavlutin.com/dont-overuse-react-usecallback/
   const reloadMatches = useCallback((opts) => {
     setLoading(true)
-    dispatch(loadMatches({ username: currentUser }))
-      .catch((e) => { console.error(e) })
-      .finally(() => { setLoading(false) })
-  }, [dispatch, currentUser])
+
+    getAcceptedMatches()
+      .then((matches) => {
+        dispatch(setMatches(matches))
+      })
+      .catch((e) => {
+        console.error(e)
+        addAlert({
+          type: 'snackbar',
+          severity: 'error',
+          text: 'Could not load matches',
+        })
+      })
+      .finally(() => {
+        setLoading(false)
+      })
+  }, [dispatch, addAlert])
 
   // Automatically load or reload chats upon opening the tab
   useEffect(reloadMatches, [reloadMatches])

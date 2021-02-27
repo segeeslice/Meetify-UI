@@ -18,6 +18,7 @@ import { makeStyles } from '@material-ui/core/styles'
 
 import {
   Grid,
+  Typography,
 } from '@material-ui/core'
 import ChatIcon from '@material-ui/icons/Chat'
 import PersonAddIcon from '@material-ui/icons/PersonAdd'
@@ -56,6 +57,10 @@ const useStyles = makeStyles((theme) => ({
     paddingRight: 50,
     position: 'relative',
   },
+  hintText: {
+    color: theme.palette.text.hint,
+    margin: theme.spacing(1),
+  },
 }))
 
 export default function MatchesView (props) {
@@ -91,18 +96,24 @@ export default function MatchesView (props) {
     selectUser(null)
   }
 
-  const userTiles = matches.map((user, i) => (
-    <UserTile
-      key={i}
-      className={classes.card}
-      user={user}
-      onActionClick={() => inMeetMode ? onAddClick({user}) : onChatClick({user})}
-      onProfileClick={() => onProfileClick({user})}
-      onCloseClick={() => onCloseClick && onCloseClick({user})}
-      onSongsClick={() => onSongsClick({user})}
-      actionButtonIcon={inMeetMode ? <PersonAddIcon/> : <ChatIcon/>}
-    />
-  ))
+  const userTiles = !matches || matches.length === 0
+        ?
+        <Typography variant="h6" className={classes.hintText}>
+          No matches yet!
+        </Typography>
+        :
+        matches.map((user, i) => (
+          <UserTile
+            key={i}
+            className={classes.card}
+            user={user}
+            onActionClick={() => inMeetMode ? onAddClick({user}) : onChatClick({user})}
+            onProfileClick={() => onProfileClick({user})}
+            onCloseClick={() => onCloseClick && onCloseClick({user})}
+            onSongsClick={() => onSongsClick({user})}
+            actionButtonIcon={inMeetMode ? <PersonAddIcon/> : <ChatIcon/>}
+          />
+        ))
 
   const userView = (
     <div className={classes.userView}>
