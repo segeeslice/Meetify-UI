@@ -34,7 +34,7 @@ const useStyles = makeStyles((theme) => ({
     height: '100%',
     flexDirection: 'column',
     overflow: 'auto', // TODO: Make scrollbar look prettier?
-    marginBottom: theme.spacing(1)
+    marginBottom: theme.spacing(1),
   },
   chat: {
     display: 'flex',
@@ -52,19 +52,25 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
+// TODO: Fix up scrolling
 export default function ChatView (props) {
   const classes = useStyles()
+
   const {
     otherUser,
   } = props
 
-  const { messages } = otherUser
+  const {
+    messages,
+    profile,
+    userId,
+  } = otherUser
 
-  const otherUserFirstName = otherUser.profile.displayName.split(' ')[0]
+  const otherUserFirstName = profile && profile.displayName ? profile.displayName.split(' ')[0] : 'Matched User'
   const inputPlaceholder = `Message ${otherUserFirstName}`
 
   const chats = (messages || []).map((m, i) => {
-    const otherUserSent = m.sender === otherUser.username
+    const otherUserSent = m.senderUserId === userId
     const directionClass = otherUserSent ? classes.chatLeft : classes.chatRight
     const color = otherUserSent ? 'secondary' : 'primary'
 
@@ -88,7 +94,7 @@ export default function ChatView (props) {
       <div className={classes.inputContainer}>
         <ChatInput
           placeholder={inputPlaceholder}
-          userTo={otherUser.username}
+          userTo={userId}
         />
       </div>
       <div className={classes.chatContainer}>

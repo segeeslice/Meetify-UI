@@ -16,6 +16,7 @@ import {
 
 // Always send with credentials to ensure cookies are sent/received
 axios.defaults.withCredentials = true
+axios.defaults.xsrfHeaderName = 'X-CSRFToken'
 
 // === CONSTANTS ===
 
@@ -29,6 +30,7 @@ const ENDPOINTS = {
   checkSpotifyLinked: ['user', 'is-linked'],
   getPotentialMatches: ['matching', 'potential-matches'],
   getAcceptedMatches: ['matching', 'accepted-matches'],
+  messages: ['chat', 'messages?match={match_id}'],
 }
 
 // === INTERVAL(S) ===
@@ -290,15 +292,20 @@ export const waitUntilSpotifyLinked = {
 // given their similarities
 const getMatches = (url) => {
   return axios.get(url)
-    .then((r) => {
+    .then(async (r) => {
       if (r.status >= 300)
         throw Error(`Received status ${r.status} from serer`)
       else if (!r.data)
         throw Error(`Received no match from server`)
-      else return Promise.all(r.data.map(m => getProfile({ userId: m['matched_with'] })))
-    })
-    .then(async (profiles) => {
-      return profiles.map(p => ({ profile: p }))
+      else {
+        const profiles = await Promise.all(r.data.map(m => getProfile({ userId: m['matched_with'] })))
+        return r.data.map((m, i) => ({
+          userId: m['matched_with'],
+          matchId: m['match_id'],
+          profile: profiles[i],
+          messages: null,
+        }))
+      }
     })
     .catch((e) => {
       throw e
@@ -313,15 +320,46 @@ export const getPotentialMatches = () => {
 export const getAcceptedMatches = () => {
   const urlPath = joinUrl(SERVER_URL, ...ENDPOINTS.getAcceptedMatches)
   return getMatches(urlPath)
-    .then(async (users) => {
-      // TODO: Integrate chat with server; set empty for now
-      return users.map(u => ({ ...u, messages: [] }))
+}
+
+export const sendMessage = ({userTo, text}) => {
+  const urlPath = joinUrl(SERVER_URL, ...ENDPOINTS.messages)
+
+  const dataToSend = {
+    ToUserID: userTo,
+    Text: text,
+  }
+
+  return axios.post(urlPath, dataToSend)
+    .then((r) => {
+      if (r.status >= 300)
+        throw Error(`Received status ${r.status} from server`)
+      else return
+    })
+    .catch((e) => {
+      throw e
     })
 }
 
-// TODO: Test db here to actually apply changes
-export const sendMessage = async ({userFrom, userTo, date, text}) => {
-  return new Promise(resolve => setTimeout(() => {
-    resolve()
-  }, 2000))
+// TODO: Update to take user ID when server is updated
+export const getMessages = ({ matchId }) => {
+  const baseUrl = joinUrl(SERVER_URL, ...ENDPOINTS.messages)
+  const urlPath = baseUrl.replace('{match_id}', matchId)
+
+  return axios.get(urlPath)
+    .then((r) => {
+      if (r.status >= 300)
+        throw Error(`Received status ${r.status} from serer`)
+      else if (!r.data)
+        throw Error(`Received no messages from server`)
+      else return r.data.map(m => ({
+        matchId: m['MatchId'],
+        senderUserId: m['SenderUserId'],
+        text: m['Text'],
+        date: new Date(m['META_StartDate']),
+      }))
+    })
+    .catch((e) => {
+      throw e
+    })
 }

@@ -4,6 +4,9 @@
  * props:
  * - onCloseClick [function] = method to call when the "close" button is clicked
  * - user [obj] = user object, as formatted in store
+ * - refreshMethod [function] = method to call every second for refreshing this user's data
+ *     - Expected arguments: { matchId }
+ *     - Expected return: Promise
  */
 
 import React, { useState, useEffect } from 'react'
@@ -65,12 +68,14 @@ export default function UserView (props) {
     user,
     defaultTab,
     chatHidden,
+    refreshMethod,
   } = props
 
   const {
     songs,
     profile,
     username,
+    matchId,
   } = user
 
   const TABS_CONFIG = [{
@@ -104,6 +109,34 @@ export default function UserView (props) {
       />
     ),
   }].filter(o => !(o.val === 'chat' && chatHidden))
+
+  // Call refreshMethod every second
+  // Allows any parent to consistently update data, as necessary
+  //
+  // Currently tied to matchId, but should always be tied to few parameters to
+  // prevent repeated calls, especially avoiding parameters that refreshMethod
+  // could change
+  //
+  // Utilizes setTimeout instead of setInterval to handle cases when server is slow
+  // (This also allows the first call to be instant!)
+  useEffect(() => {
+    if (refreshMethod) {
+      let timeout = null
+
+      const intervalMethod = async () => {
+        refreshMethod({ matchId })
+          .then(() => {
+            timeout = setTimeout(intervalMethod, 1000)
+          })
+          .catch(() => {
+            clearTimeout(timeout)
+          })
+      }
+
+      intervalMethod()
+      return () => clearTimeout(timeout)
+    }
+  }, [ refreshMethod, matchId ])
 
   const DEFAULT_TAB_INDEX = (defaultTab && TABS_CONFIG.findIndex(o => o.val === defaultTab)) || 0
   const [activeTabIndex, setActiveTabIndex] = useState(DEFAULT_TAB_INDEX)

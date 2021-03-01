@@ -13,7 +13,6 @@
  */
 
 import React, { useState } from 'react'
-// import { useSelector, useDispatch } from 'react-redux'
 import { makeStyles } from '@material-ui/core/styles'
 
 import {
@@ -72,28 +71,32 @@ export default function MatchesView (props) {
     onRefreshClick,
     onCloseClick,
     loading,
+    refreshMethod,
   } = props
 
-  const [ selectedUser, selectUser ] = useState(null)
   const [ selectedTab, selectTab ] = useState(null)
 
-  const onChatClick =({user}) => {
+  // Tie the selected user to an index to ensure reactivity if that item changes
+  const [ selectedUserIndex, selectUserIndex ] = useState(null)
+  const selectedUser = selectedUserIndex != null ? matches[selectedUserIndex] : null
+
+  const onChatClick =(index) => {
     selectTab('chat')
-    selectUser(user)
+    selectUserIndex(index)
   }
-  const onAddClick = ({user}) => {
+  const onAddClick = (index) => {
     console.log('Adding!')
   }
-  const onProfileClick =({user}) => {
+  const onProfileClick =(index) => {
     selectTab('profile')
-    selectUser(user)
+    selectUserIndex(index)
   }
-  const onSongsClick = ({user}) => {
+  const onSongsClick = (index) => {
     selectTab('songs')
-    selectUser(user)
+    selectUserIndex(index)
   }
   const closeUserView = () => {
-    selectUser(null)
+    selectUserIndex(null)
   }
 
   const userTiles = !matches || matches.length === 0
@@ -107,10 +110,10 @@ export default function MatchesView (props) {
             key={i}
             className={classes.card}
             user={user}
-            onActionClick={() => inMeetMode ? onAddClick({user}) : onChatClick({user})}
-            onProfileClick={() => onProfileClick({user})}
-            onCloseClick={() => onCloseClick && onCloseClick({user})}
-            onSongsClick={() => onSongsClick({user})}
+            onActionClick={() => inMeetMode ? onAddClick(i) : onChatClick(i)}
+            onProfileClick={() => onProfileClick(i)}
+            onCloseClick={() => onCloseClick && onCloseClick(i)}
+            onSongsClick={() => onSongsClick(i)}
             actionButtonIcon={inMeetMode ? <PersonAddIcon/> : <ChatIcon/>}
           />
         ))
@@ -122,6 +125,7 @@ export default function MatchesView (props) {
         user={selectedUser}
         defaultTab={selectedTab}
         chatHidden={inMeetMode}
+        refreshMethod={refreshMethod}
       />
     </div>
   )

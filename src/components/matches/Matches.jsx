@@ -9,8 +9,8 @@ import React, { useEffect, useState, useCallback } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import useAlert from '../../hooks/useAlert'
 
-import { setMatches } from './matchesSlice'
-import { getAcceptedMatches } from '../../server'
+import { setMatches, setMessages } from './matchesSlice'
+import { getAcceptedMatches, getMessages } from '../../server'
 
 import MatchesView from './MatchesView'
 
@@ -27,7 +27,7 @@ export default function Matches (props) {
   const reloadMatches = useCallback((opts) => {
     setLoading(true)
 
-    getAcceptedMatches()
+    return getAcceptedMatches()
       .then((matches) => {
         dispatch(setMatches(matches))
       })
@@ -38,6 +38,7 @@ export default function Matches (props) {
           severity: 'error',
           text: 'Could not load matches',
         })
+        throw e
       })
       .finally(() => {
         setLoading(false)
@@ -45,7 +46,27 @@ export default function Matches (props) {
   }, [dispatch, addAlert])
 
   // Automatically load or reload chats upon opening the tab
-  useEffect(reloadMatches, [reloadMatches])
+  useEffect(() => { reloadMatches() }, [reloadMatches])
+
+  // Method to continually call for refreshing a single user's data from server
+  // Called here to ensure lower components can remain mostly decoupled
+  const refreshMatch = useCallback(({ matchId }) => {
+    console.info(`Refreshing match ${matchId} data...`)
+
+    return getMessages({ matchId })
+      .then((messages) => {
+        dispatch(setMessages({ matchId, messages }))
+      })
+      .catch((e) => {
+        console.error(e)
+        addAlert({
+          type: 'snackbar',
+          severity: 'error',
+          text: 'Could not load messages'
+        })
+        throw e
+      })
+  }, [dispatch, addAlert])
 
   const onCloseClick =({user}) => {
     console.log('closing...')
@@ -57,6 +78,7 @@ export default function Matches (props) {
       loading={loading}
       onRefreshClick={reloadMatches}
       onCloseClick={onCloseClick}
+      refreshMethod={refreshMatch}
     />
   )
 }
