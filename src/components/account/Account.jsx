@@ -17,7 +17,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import useAlert from '../../hooks/useAlert'
 
 import { setProfile } from './accountSlice'
-import { getProfile, editProfile } from '../../server'
+import { editProfile } from '../../server'
 
 import {
   Button,

@@ -63,7 +63,7 @@ export default function Meet () {
 
   let timeout = null
 
-  useEffect(() => (clearTimeout(timeout)))
+  useEffect(() => (() => { clearTimeout(timeout) }))
 
   function onRefreshClick () {
     // Change UI to indicate loading

@@ -8,8 +8,8 @@
  */
 
 import React, { useCallback, useState } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
 import { makeStyles } from '@material-ui/core/styles'
+import useAlert from '../../../hooks/useAlert'
 
 import { sendMessage } from '../../../server'
 
@@ -31,8 +31,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function ChatInput (props) {
   const classes = useStyles()
-  const dispatch = useDispatch()
-  const userFrom = useSelector(state => state.account.username)
+  const { addAlert } = useAlert()
 
   // NOTE: This may be causing too many re-renders? But unsure how to mitigate
   //       Doesn't appear to severely impact performance, given small component
@@ -47,18 +46,19 @@ export default function ChatInput (props) {
     // TODO: Loading icons and things
 
     // Send message to server
-    sendMessage({
-      userFrom,
-      userTo,
-      date: Date.now(),
-      text: text,
-    })
-    // Reload messages from server to ensure we're seeing it properly
-      // .then(() => dispatch(loadMatches()))
-      .finally(() => {
+    sendMessage({userTo, text})
+      .then(() => {
         setText('')
       })
-  }, [dispatch, userTo, userFrom])
+      .catch((e) => {
+        console.error(e)
+        addAlert({
+          type: 'snackbar',
+          severity: 'error',
+          text: 'Could not send message. Please try again.'
+        })
+      })
+  }, [userTo, addAlert])
 
   return (
     <div className={classes.root}>
@@ -75,7 +75,7 @@ export default function ChatInput (props) {
 
       {/* Wrap in div so button doesn't grow in height */}
       <div>
-        <IconButton onClick={onSendClick}>
+        <IconButton onClick={() => onSendClick(text)}>
           <SendIcon/>
         </IconButton>
       </div>

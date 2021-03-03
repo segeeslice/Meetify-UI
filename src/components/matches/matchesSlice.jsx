@@ -21,9 +21,13 @@ const matchesSlice = createSlice({
     clearMatches: state => {
       state.matches = []
     },
+    setMessages: (state, action) => {
+      const { matchId, messages } = action.payload
+      state.matches = state.matches.map((m) => m.matchId !== matchId ? m : {...m, messages})
+    },
   }
 })
 
 export { matchesSlice }
-export const { setMatches, clearMatches } = matchesSlice.actions
+export const { setMatches, clearMatches, setMessages } = matchesSlice.actions
 export default matchesSlice.reducer
