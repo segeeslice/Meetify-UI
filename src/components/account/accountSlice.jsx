@@ -1,20 +1,11 @@
 /*
  * Redux slice for containing current user account data
  * Should be only written to within the Login component
- * (NOTE: Currently just uses test data)
  *
  * Sends to state.account
  */
 
 import { createSlice } from '@reduxjs/toolkit'
-
-// Temporary test data for the profile
-const PROFILE_TEST_INFO = {
-  displayName: 'Doug Douglas',
-  description: 'Hey! The name\'s Doug, but you can call be "D-D-D-Doug in da Hiz House". Please talk to me. '.repeat(10),
-  status: 'Chillin\'',
-  profilePicUrl: 'https://www.kindpng.com/picc/m/78-785827_user-profile-avatar-login-account-male-user-icon.png',
-}
 
 const defaultData = {
   loggedIn: false,
@@ -50,21 +41,12 @@ export const accountSlice = createSlice({
     },
     setUsername: (state, action) => {
       state.username = action.payload
-      // TODO: Pull info from server based on username
-      //       (which should probably be async)
-      state.profile = {...PROFILE_TEST_INFO}
     },
     setUserId: (state, action) => {
       state.userId = action.payload
     },
     setProfile: (state, action) => {
       state.profile = action.payload
-    },
-    editProfile: (state, action) => {
-      // TODO: Send to server and receive again
-      const { changes } = action.payload
-      state.profile = { ...state.profile, ...changes }
-      console.log(state.profile)
     },
     setSpotifyLinked: (state, action) => {
       state.spotify.linked = action.payload
@@ -76,7 +58,6 @@ export const {
   setLoggedIn,
   setUsername,
   setUserId,
-  editProfile,
   setProfile,
   setSpotifyLinked,
 } = accountSlice.actions

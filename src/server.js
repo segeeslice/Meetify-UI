@@ -197,7 +197,6 @@ export const editProfile = async({ userId, changes }) => {
 
   return axios.post(urlPath, dataToSend)
     .then((r) => {
-      console.log(r)
       if (r.status >= 300)
         throw Error(`Received status ${r.status} from server`)
       else if (!r.data)
