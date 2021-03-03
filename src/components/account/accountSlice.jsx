@@ -16,24 +16,37 @@ const PROFILE_TEST_INFO = {
   profilePicUrl: 'https://www.kindpng.com/picc/m/78-785827_user-profile-avatar-login-account-male-user-icon.png',
 }
 
+const defaultData = {
+  loggedIn: false,
+  username: '',
+  userId: -1,
+  spotify: {
+    linked: false,
+  },
+  profile: {
+    displayName: '',
+    description: '',
+    profilePicUrl: '',
+  },
+}
+
 export const accountSlice = createSlice({
   name: 'account',
   initialState: {
-    loggedIn: false,
-    username: '',
-    userId: -1,
-    spotify: {
-      linked: false,
-    },
-    profile: {
-      displayName: '',
-      description: '',
-      profilePicUrl: '',
-    }
+    ...defaultData,
+    spotify: { ...defaultData.spotify },
+    profile: { ...defaultData.profile },
   },
   reducers: {
     setLoggedIn: (state, action) => {
       state.loggedIn = action.payload
+
+      // If we just logged out, reset all data to defaults
+      if (!action.payload) state = {
+        ...defaultData,
+        spotify: { ...defaultData.spotify },
+        profile: { ...defaultData.profile },
+      }
     },
     setUsername: (state, action) => {
       state.username = action.payload

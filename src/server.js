@@ -24,6 +24,7 @@ const SERVER_URL = 'http://localhost:8000'
 
 const ENDPOINTS = {
   login: ['user', 'login'],
+  logout: ['user', 'logout'],
   signup: ['user', 'signup'],
   profile: ['user', '{id}', 'profile'],
   linkSpotifyAccount: ['user', 'link-account'],
@@ -104,6 +105,20 @@ export const login = async ({ username, email, password }) => {
         username: r.data.username,
         userId: r.data.id,
       }
+    }).catch((e) => {
+      throw e
+    })
+}
+
+export const logout = async () => {
+  const urlPath = joinUrl(SERVER_URL, ...ENDPOINTS.logout)
+
+  return axios.get(urlPath)
+    .then(async (r) => {
+      if (r.status === 204)
+        return
+      else
+        throw Error(`Received status ${r.status} from server`)
     }).catch((e) => {
       throw e
     })
