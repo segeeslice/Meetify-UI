@@ -25,9 +25,12 @@ const matchesSlice = createSlice({
       const { matchId, messages } = action.payload
       state.matches = state.matches.map((m) => m.matchId !== matchId ? m : {...m, messages})
     },
+    resetMatchesData: state => {
+      state.matches = []
+    },
   }
 })
 
 export { matchesSlice }
-export const { setMatches, clearMatches, setMessages } = matchesSlice.actions
+export const { setMatches, clearMatches, setMessages, resetMatchesData } = matchesSlice.actions
 export default matchesSlice.reducer

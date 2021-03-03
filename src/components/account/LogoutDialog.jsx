@@ -7,7 +7,10 @@ import { useDispatch } from 'react-redux'
 import useAlert from '../../hooks/useAlert'
 
 import { logout } from '../../server'
-import { setLoggedIn } from './accountSlice'
+import { setLoggedIn, resetAccountData } from './accountSlice'
+import { resetIntersectData } from '../intersect/intersectSlice'
+import { resetMatchesData } from '../matches/matchesSlice'
+import { clearMatches as resetMeetData } from '../meet/meetSlice'
 
 import {
   // Button,
@@ -31,6 +34,12 @@ export default function LogoutDialog (props) {
     logout()
       .then(() => {
         dispatch(setLoggedIn(false))
+
+        dispatch(resetAccountData())
+        dispatch(resetIntersectData())
+        dispatch(resetMatchesData())
+        dispatch(resetMeetData())
+
         onSuccess && onSuccess()
       })
       .catch((e) => {

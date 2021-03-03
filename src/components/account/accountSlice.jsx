@@ -7,7 +7,7 @@
 
 import { createSlice } from '@reduxjs/toolkit'
 
-const defaultData = {
+const DEFAULT_DATA = {
   loggedIn: false,
   username: '',
   userId: -1,
@@ -24,20 +24,13 @@ const defaultData = {
 export const accountSlice = createSlice({
   name: 'account',
   initialState: {
-    ...defaultData,
-    spotify: { ...defaultData.spotify },
-    profile: { ...defaultData.profile },
+    ...DEFAULT_DATA,
+    spotify: { ...DEFAULT_DATA.spotify },
+    profile: { ...DEFAULT_DATA.profile },
   },
   reducers: {
     setLoggedIn: (state, action) => {
       state.loggedIn = action.payload
-
-      // If we just logged out, reset all data to defaults
-      if (!action.payload) state = {
-        ...defaultData,
-        spotify: { ...defaultData.spotify },
-        profile: { ...defaultData.profile },
-      }
     },
     setUsername: (state, action) => {
       state.username = action.payload
@@ -51,6 +44,13 @@ export const accountSlice = createSlice({
     setSpotifyLinked: (state, action) => {
       state.spotify.linked = action.payload
     },
+    resetAccountData: (state, action) => {
+      state = {
+        ...DEFAULT_DATA,
+        spotify: { ...DEFAULT_DATA.spotify },
+        profile: { ...DEFAULT_DATA.profile },
+      }
+    }
   }
 })
 
@@ -60,5 +60,6 @@ export const {
   setUserId,
   setProfile,
   setSpotifyLinked,
+  resetAccountData,
 } = accountSlice.actions
 export default accountSlice.reducer
