@@ -24,6 +24,7 @@ const SERVER_URL = 'http://localhost:8000'
 
 const ENDPOINTS = {
   login: ['user', 'login'],
+  logout: ['user', 'logout'],
   signup: ['user', 'signup'],
   profile: ['user', '{id}', 'profile'],
   linkSpotifyAccount: ['user', 'link-account'],
@@ -109,6 +110,20 @@ export const login = async ({ username, email, password }) => {
     })
 }
 
+export const logout = async () => {
+  const urlPath = joinUrl(SERVER_URL, ...ENDPOINTS.logout)
+
+  return axios.get(urlPath)
+    .then(async (r) => {
+      if (r.status === 204)
+        return
+      else
+        throw Error(`Received status ${r.status} from server`)
+    }).catch((e) => {
+      throw e
+    })
+}
+
 export const signup = async ({ username, email, password }) => {
   if (!checkValidUsername(username)) throw Error (`Invalid registration username: ${email}`)
   if (!checkValidEmail(email)) throw Error (`Invalid registration email: ${email}`)
@@ -182,7 +197,6 @@ export const editProfile = async({ userId, changes }) => {
 
   return axios.post(urlPath, dataToSend)
     .then((r) => {
-      console.log(r)
       if (r.status >= 300)
         throw Error(`Received status ${r.status} from server`)
       else if (!r.data)

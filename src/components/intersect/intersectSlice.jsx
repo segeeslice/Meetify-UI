@@ -67,9 +67,12 @@ export const intersectSlice = createSlice({
       state.songs = TEST_SONG_DATA
         .concat(TEST_SONG_DATA)
         .concat(TEST_SONG_DATA)
+    },
+    resetIntersectData: state => {
+      state = { userId: '', songs: [] }
     }
   }
 })
 
-export const { setUserId, setSongs, importSongs } = intersectSlice.actions
+export const { setUserId, setSongs, importSongs, resetIntersectData } = intersectSlice.actions
 export default intersectSlice.reducer

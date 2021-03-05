@@ -15,6 +15,7 @@ import {
 } from '@material-ui/core'
 import ErrorBadge from './ErrorBadge'
 import LinkSpotifyDialog from './account/LinkSpotifyDialog'
+import LogoutDialog from './account/LogoutDialog'
 
 import LogoutIcon from '@material-ui/icons/ExitToApp'
 import AccountIcon from '@material-ui/icons/AccountCircle'
@@ -55,6 +56,7 @@ export default function VerticalTabBar (props) {
 
   const spotifyLinked = useSelector(state => state.account.spotify.linked)
   const [ linkSpotifyDialogOpen, setLinkSpotifyDialogOpen ] = useState(false)
+  const [ logoutDialogOpen, setLogoutDialogOpen ] = useState(false)
 
   const onSpotifyClick = () => {
     if (!spotifyLinked) {
@@ -80,6 +82,22 @@ export default function VerticalTabBar (props) {
     setLinkSpotifyDialogOpen(false)
   }
 
+  const onLogoutClick = () => {
+    setLogoutDialogOpen(true)
+  }
+
+  const onLogoutCancel = () => {
+    setLogoutDialogOpen(false)
+  }
+  const onLogoutSuccess = () => {
+    setLogoutDialogOpen(false)
+    addAlert({
+      severity: 'success',
+      text: 'You are now logged out from Meetify.',
+      type: 'snackbar',
+    })
+  }
+
   return (
     <>
       <Paper
@@ -97,7 +115,12 @@ export default function VerticalTabBar (props) {
         <div><hr className={classes.divider}/></div>
 
         <div className={classes.buttons}>
-          <IconButton className={classes.logoutButton}><LogoutIcon/></IconButton>
+          <IconButton
+            className={classes.logoutButton}
+            onClick={onLogoutClick}
+          >
+            <LogoutIcon/>
+          </IconButton>
 
           <IconButton onClick={onSpotifyClick}>
             <ErrorBadge
@@ -116,6 +139,11 @@ export default function VerticalTabBar (props) {
         open={linkSpotifyDialogOpen}
         onSuccess={onLinkSpotifySuccess}
         onCancel={onLinkSpotifyCancel}
+      />
+      <LogoutDialog
+        open={logoutDialogOpen}
+        onSuccess={onLogoutSuccess}
+        onCancel={onLogoutCancel}
       />
     </>
   );
