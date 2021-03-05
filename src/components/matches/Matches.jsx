@@ -74,7 +74,7 @@ export default function Matches (props) {
       loading={loading}
       onRefreshClick={reloadMatches}
       refreshMethod={refreshMatch}
-      onDismiss={() => reloadMatches()}
+      onChange={() => reloadMatches()}
       useDismissWarningDialog
     />
   )

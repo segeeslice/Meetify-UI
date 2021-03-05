@@ -145,7 +145,7 @@ export default function Meet () {
       matches={matches}
       loading={searching}
       onRefreshClick={onRefreshClick}
-      onDismiss={() => onRefreshClick()}
+      onChange={() => onRefreshClick()}
     />
   )
   // TODO: Add fade animation between these, possibly put into generic component first

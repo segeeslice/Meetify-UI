@@ -396,3 +396,20 @@ export const rejectMatch = ({ matchId }) => {
       throw e
     })
 }
+
+export const acceptMatch = ({ matchId }) => {
+  const urlPath = joinUrl(SERVER_URL, ...ENDPOINTS.acceptMatch)
+  const dataToSend = {
+    'match_id': matchId,
+  }
+
+  return axios.post(urlPath, dataToSend)
+    .then((r) => {
+      if (r.status >= 300)
+        throw Error(`Received status ${r.status} from serer`)
+      else return
+    })
+    .catch((e) => {
+      throw e
+    })
+}

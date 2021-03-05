@@ -16,7 +16,7 @@ import React, { useState, useCallback } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import useAlert from '../../hooks/useAlert'
 
-import { rejectMatch } from '../../server'
+import { rejectMatch, acceptMatch } from '../../server'
 
 import {
   Grid,
@@ -77,7 +77,7 @@ export default function MatchesView (props) {
     loading,
     refreshMethod,
     useDismissWarningDialog,
-    onDismiss,
+    onChange,
   } = props
 
   const [ selectedTab, selectTab ] = useState(null)
@@ -107,9 +107,29 @@ export default function MatchesView (props) {
     selectUserIndex(null)
   }, [selectUserIndex])
 
-  const onAddClick = useCallback((index) => {
-    console.log('Adding!')
-  }, [])
+  const onAddClick = useCallback((user) => {
+    const {
+      matchId
+    } = user
+
+    acceptMatch({ matchId })
+      .then(() => {
+        addAlert({
+          type: 'snackbar',
+          severity: 'success',
+          text: 'Match accepted',
+        })
+        onChange && onChange()
+      })
+      .catch((e) => {
+        console.error(e)
+        addAlert({
+          type: 'snackbar',
+          severity: 'error',
+          text: 'Could not accept match',
+        })
+      })
+  }, [addAlert, onChange])
 
   const onCloseClick = useCallback((user) => {
     const {
@@ -124,7 +144,7 @@ export default function MatchesView (props) {
             severity: 'info',
             text: 'Match dismissed',
           })
-          onDismiss && onDismiss(user)
+          onChange && onChange()
         })
         .catch((e) => {
           console.error(e)
@@ -151,7 +171,7 @@ export default function MatchesView (props) {
     setDismissDialogOpen,
     useDismissWarningDialog,
     addAlert,
-    onDismiss,
+    onChange,
   ])
 
   const onDismissDialogCancel = useCallback(() => {
@@ -170,7 +190,7 @@ export default function MatchesView (props) {
             key={i}
             className={classes.card}
             user={user}
-            onActionClick={() => inMeetMode ? onAddClick(i) : onChatClick(i)}
+            onActionClick={() => inMeetMode ? onAddClick(user) : onChatClick(i)}
             onProfileClick={() => onProfileClick(i)}
             onCloseClick={() => onCloseClick(user)}
             onSongsClick={() => onSongsClick(i)}
