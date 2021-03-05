@@ -31,7 +31,10 @@ const useStyles = makeStyles((theme) => ({
   secondaryColor: {
     backgroundColor: theme.palette.background.default
   },
-  timeText: {
+  text: {
+    whiteSpace: 'pre', // Allow new lines
+  },
+  date: {
     color: theme.palette.text.hint
   },
 }))
@@ -53,12 +56,12 @@ export default function ChatBubble (props) {
   return (
     <Paper className={`${classes.root} ${colorClass}`} elevation={1}>
       <div>
-        <Typography variant="body2">
+        <Typography variant="body2" className={classes.text}>
           {text}
         </Typography>
       </div>
       <div>
-        <Typography variant="caption" className={classes.timeText}>
+        <Typography variant="caption" className={classes.date}>
           {getShortDateTime(date)}
         </Typography>
       </div>

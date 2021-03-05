@@ -369,7 +369,8 @@ export const getMessages = ({ matchId }) => {
       else return r.data.map(m => ({
         matchId: m['MatchId'],
         senderUserId: m['SenderUserId'],
-        text: m['Text'],
+        // Stored as plain-text encoding on server; convert to real new-lines
+        text: m['Text'].replaceAll('\\n', '\n'),
         date: new Date(m['META_StartDate']),
       }))
     })
