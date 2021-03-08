@@ -34,6 +34,7 @@ const ENDPOINTS = {
   rejectMatch: ['matching', 'reject-match'],
   acceptMatch: ['matching', 'accept-match'],
   messages: ['chat', 'messages?match={match_id}'],
+  userSongIntersection: ['intersection', 'liked-songs']
 }
 
 // === INTERVAL(S) ===
@@ -230,7 +231,7 @@ export const linkSpotifyAccount = async ({ userId }) => {
   return axios.get(urlPath)
     .then((r) => {
       if (r.status >= 300)
-        throw Error(`Received status ${r.status} from serer`)
+        throw Error(`Received status ${r.status} from server`)
       else if (!r.data)
         throw Error(`Received no Spotify link URL from server`)
       else return {
@@ -248,7 +249,7 @@ export const checkSpotifyLinked = async ({ userId }) => {
   return axios.get(urlPath)
     .then((r) => {
       if (r.status >= 300)
-        throw Error(`Received status ${r.status} from serer`)
+        throw Error(`Received status ${r.status} from server`)
       else if (!r.data || r.data.IsLinked === null || r.data.IsLinked === undefined)
         throw Error(`Received no Spotify link check from server`)
       else return {
@@ -310,15 +311,17 @@ const getMatches = (url) => {
   return axios.get(url)
     .then(async (r) => {
       if (r.status >= 300)
-        throw Error(`Received status ${r.status} from serer`)
+        throw Error(`Received status ${r.status} from server`)
       else if (!r.data)
         throw Error(`Received no match from server`)
       else {
         const profiles = await Promise.all(r.data.map(m => getProfile({ userId: m['matched_with'] })))
+        const songs = await Promise.all(r.data.map(m => getUserSongIntersection({ userId: m['matched_with'] })))
         return r.data.map((m, i) => ({
           userId: m['matched_with'],
           matchId: m['match_id'],
           profile: profiles[i],
+          songs: songs[i],
           messages: null,
         }))
       }
@@ -364,7 +367,7 @@ export const getMessages = ({ matchId }) => {
   return axios.get(urlPath)
     .then((r) => {
       if (r.status >= 300)
-        throw Error(`Received status ${r.status} from serer`)
+        throw Error(`Received status ${r.status} from server`)
       else if (!r.data)
         throw Error(`Received no messages from server`)
       else return r.data.map(m => ({
@@ -389,7 +392,7 @@ export const rejectMatch = ({ matchId }) => {
   return axios.post(urlPath, dataToSend)
     .then((r) => {
       if (r.status >= 300)
-        throw Error(`Received status ${r.status} from serer`)
+        throw Error(`Received status ${r.status} from server`)
       else return
     })
     .catch((e) => {
@@ -406,8 +409,27 @@ export const acceptMatch = ({ matchId }) => {
   return axios.post(urlPath, dataToSend)
     .then((r) => {
       if (r.status >= 300)
-        throw Error(`Received status ${r.status} from serer`)
+        throw Error(`Received status ${r.status} from server`)
       else return
+    })
+    .catch((e) => {
+      throw e
+    })
+}
+
+export const getUserSongIntersection = ({ userId }) => {
+  const urlPath = joinUrl(SERVER_URL, ...ENDPOINTS.userSongIntersection)
+  const dataToSend = {
+    'target_user_id': userId,
+  }
+
+  return axios.post(urlPath, dataToSend)
+    .then((r) => {
+      if (r.status >= 300)
+        throw Error(`Received status ${r.status} from server`)
+      else if (!r.data)
+        throw Error('Received no data from server')
+      else return Object.keys(r.data).map(k => ({...r.data[k], songId: k}))
     })
     .catch((e) => {
       throw e
