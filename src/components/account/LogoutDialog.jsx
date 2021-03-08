@@ -30,7 +30,6 @@ export default function LogoutDialog (props) {
   } = props
 
   const onSubmit = () => {
-    console.log('submitting')
     logout()
       .then(() => {
         dispatch(setLoggedIn(false))
