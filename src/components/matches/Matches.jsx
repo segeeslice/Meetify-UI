@@ -45,7 +45,7 @@ export default function Matches (props) {
       })
   }, [dispatch, addAlert])
 
-  // Automatically load or reload chats upon opening the tab
+  // Automatically load or reload matches upon opening the tab
   useEffect(() => { reloadMatches() }, [reloadMatches])
 
   // Method to continually call for refreshing a single user's data from server
@@ -68,17 +68,14 @@ export default function Matches (props) {
       })
   }, [dispatch, addAlert])
 
-  const onCloseClick =({user}) => {
-    console.log('closing...')
-  }
-
   return (
     <MatchesView
       matches={matches}
       loading={loading}
       onRefreshClick={reloadMatches}
-      onCloseClick={onCloseClick}
       refreshMethod={refreshMatch}
+      onChange={() => reloadMatches()}
+      useDismissWarningDialog
     />
   )
 }

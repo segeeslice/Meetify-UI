@@ -31,6 +31,8 @@ const ENDPOINTS = {
   checkSpotifyLinked: ['user', 'is-linked'],
   getPotentialMatches: ['matching', 'potential-matches'],
   getAcceptedMatches: ['matching', 'accepted-matches'],
+  rejectMatch: ['matching', 'reject-match'],
+  acceptMatch: ['matching', 'accept-match'],
   messages: ['chat', 'messages?match={match_id}'],
 }
 
@@ -355,7 +357,6 @@ export const sendMessage = ({userTo, text}) => {
     })
 }
 
-// TODO: Update to take user ID when server is updated
 export const getMessages = ({ matchId }) => {
   const baseUrl = joinUrl(SERVER_URL, ...ENDPOINTS.messages)
   const urlPath = baseUrl.replace('{match_id}', matchId)
@@ -373,6 +374,40 @@ export const getMessages = ({ matchId }) => {
         text: m['Text'].replaceAll('\\n', '\n'),
         date: new Date(m['META_StartDate']),
       }))
+    })
+    .catch((e) => {
+      throw e
+    })
+}
+
+export const rejectMatch = ({ matchId }) => {
+  const urlPath = joinUrl(SERVER_URL, ...ENDPOINTS.rejectMatch)
+  const dataToSend = {
+    'match_id': matchId,
+  }
+
+  return axios.post(urlPath, dataToSend)
+    .then((r) => {
+      if (r.status >= 300)
+        throw Error(`Received status ${r.status} from serer`)
+      else return
+    })
+    .catch((e) => {
+      throw e
+    })
+}
+
+export const acceptMatch = ({ matchId }) => {
+  const urlPath = joinUrl(SERVER_URL, ...ENDPOINTS.acceptMatch)
+  const dataToSend = {
+    'match_id': matchId,
+  }
+
+  return axios.post(urlPath, dataToSend)
+    .then((r) => {
+      if (r.status >= 300)
+        throw Error(`Received status ${r.status} from serer`)
+      else return
     })
     .catch((e) => {
       throw e
