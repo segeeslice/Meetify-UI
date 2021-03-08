@@ -140,7 +140,7 @@ export const signup = async ({ username, email, password }) => {
     Password: password,
     DisplayName: defaultDisplayName,
     ZipCode: null,
-    ProfilePic: null,
+    ProfilePicURL: null,
   }
 
   return axios.post(urlPath, dataToSend)
@@ -173,7 +173,7 @@ export const getProfile = async({ userId }) => {
         throw Error (`Received no profile data from server`)
       else return {
         displayName: r.data.DisplayName,
-        profilePicUrl: r.data.ProfilePic,
+        profilePicUrl: r.data.ProfilePicURL,
         description: r.data.Description,
       }
     }).catch((e) => {
@@ -194,7 +194,7 @@ export const editProfile = async({ userId, changes }) => {
   const dataToSend = cleanEmptyKeys({
     Description: description,
     DisplayName: displayName,
-    ProfilePic: profilePicUrl,
+    ProfilePicURL: profilePicUrl,
   })
 
   return axios.post(urlPath, dataToSend)
@@ -205,7 +205,7 @@ export const editProfile = async({ userId, changes }) => {
         throw Error (`Received no profile data from server`)
       else return {
         displayName: r.data.DisplayName,
-        profilePicUrl: r.data.ProfilePic,
+        profilePicUrl: r.data.ProfilePicURL,
         description: r.data.Description,
       }
     })
