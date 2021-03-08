@@ -59,7 +59,6 @@ export default function EditProfileDialog(props) {
   const classes = useStyles()
   const [ descChange, setDescChange ] = useState(null)
   const [ dispNameChange, setDispNameChange ] = useState(null)
-  const [ profPicChange, setProfPicChange ] = useState(null)
 
   const dispNameError = dispNameChange !== null && dispNameChange.length === 0
 
@@ -68,7 +67,6 @@ export default function EditProfileDialog(props) {
     if (open === true) {
       setDescChange(null)
       setDispNameChange(null)
-      setProfPicChange(null)
     }
   }, [open])
 
@@ -78,7 +76,6 @@ export default function EditProfileDialog(props) {
     const changeObj = {}
     if (descChange !== null) changeObj.description = descChange.trim()
     if (dispNameChange !== null) changeObj.displayName = dispNameChange.trim()
-    if (profPicChange !== null) changeObj.profilePicUrl = profPicChange.trim()
 
     onSave(changeObj)
   }
@@ -96,17 +93,17 @@ export default function EditProfileDialog(props) {
       <span className={classes.avatarRow}>
         <UserAvatar
           className={classes.avatar}
-          src={profPicChange !== null ? profPicChange : profilePicUrl}
+          src={profilePicUrl}
           displayName={dispNameChange !== null ? dispNameChange : displayName}
         />
         {/* TODO: Image upload button? Paste button? */}
         <TextField
           className={classes.avatarTextField}
           fullWidth
+          disabled
           variant="outlined"
-          label="Profile Picture URL"
-          value={profPicChange !== null ? profPicChange : profilePicUrl}
-          onChange={(e) => setProfPicChange(e.target.value)}
+          label="Profile Picture"
+          value="(This is pulled from your Spotify account)"
         />
       </span>
       <TextField
