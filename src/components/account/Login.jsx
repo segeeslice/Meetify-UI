@@ -47,6 +47,7 @@ const useStyles = makeStyles((theme) => ({
 export default function Login (props) {
   const classes = useStyles()
   const dispatch = useDispatch()
+  const passwordRef = useRef(null)
 
   const { addAlert } = useAlert()
 
@@ -62,7 +63,7 @@ export default function Login (props) {
 
   const [createDialogOpen, setCreateDialogOpen] = useState(false)
 
-  const onLoginClick = async () => {
+  const onLoginClick = useCallback(async () => {
     setLoginLoading(true)
 
     login({ username, password })
@@ -100,7 +101,7 @@ export default function Login (props) {
         setPassword('')
         setLoginLoading(false)
       })
-  }
+  }, [dispatch, addAlert, password, username, setLoginLoading])
 
   // Login and welcome transition handling
   useEffect(() => {
@@ -131,6 +132,16 @@ export default function Login (props) {
     setCreateDialogOpen(false)
   }, [ addAlert, setCreateDialogOpen ])
 
+  const onPassKeypress = useCallback((e) => {
+    const enterPressed = e.keyCode === 13
+    if (enterPressed) onLoginClick()
+  }, [onLoginClick])
+
+  const onUsernameKeypress = useCallback((e) => {
+    const enterPressed = e.keyCode === 13
+    if (enterPressed) passwordRef.current.focus()
+  }, [passwordRef])
+
   // TODO: Move these to material-ui's makeStyle syntax
   const gridItemStyle = { textAlign: 'center', paddingBottom: '10px' }
 
@@ -150,6 +161,7 @@ export default function Login (props) {
           label="Username"
           value={username}
           onChange={(e) => dispatch(setUsername(e.target.value))}
+          onKeyDown={onUsernameKeypress}
           disabled={loginLoading}
         />
       </Grid>
@@ -157,9 +169,11 @@ export default function Login (props) {
         <TextField
           label="Password"
           type="password"
+          inputRef={passwordRef}
           autoComplete="current-password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          onKeyDown={onPassKeypress}
           disabled={loginLoading}
         />
       </Grid>
