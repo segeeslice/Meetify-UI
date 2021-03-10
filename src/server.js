@@ -110,11 +110,6 @@ export const login = async ({ username, email, password }) => {
         userId: r.data.id,
       }
     })
-    // Do any necessary synchronizations
-    .then(async (user) => {
-      await syncProfilePic()
-      return user
-    })
     .catch((e) => {
       throw e
     })
