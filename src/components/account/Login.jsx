@@ -15,7 +15,9 @@ import {
   TextField,
   Typography,
 } from '@material-ui/core'
+
 import CreateAccountDialog from './CreateAccountDialog'
+import ButtonProgress from '../ButtonProgress'
 
 import {
   login,
@@ -56,9 +58,13 @@ export default function Login (props) {
   const [welcomeVisible, setWelcomeVisible] = useState(false)
   const [timeoutVar, setTimeoutVar] = useState(null)
 
+  const [loginLoading, setLoginLoading] = useState(false)
+
   const [createDialogOpen, setCreateDialogOpen] = useState(false)
 
   const onLoginClick = async () => {
+    setLoginLoading(true)
+
     login({ username, password })
 
       .then(async ({ username, userId }) => {
@@ -81,7 +87,10 @@ export default function Login (props) {
       })
 
       // Trigger login animation chain
-      .then(() => setLoginVisible(false))
+      .then(() => {
+        setLoginLoading(false)
+        setLoginVisible(false)
+      })
 
       .catch((e) => {
         console.error(e)
@@ -89,6 +98,7 @@ export default function Login (props) {
                   type: 'snackbar',
                   severity: 'error'})
         setPassword('')
+        setLoginLoading(false)
       })
   }
 
@@ -140,6 +150,7 @@ export default function Login (props) {
           label="Username"
           value={username}
           onChange={(e) => dispatch(setUsername(e.target.value))}
+          disabled={loginLoading}
         />
       </Grid>
       <Grid item style={gridItemStyle} xs={12}>
@@ -149,6 +160,7 @@ export default function Login (props) {
           autoComplete="current-password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          disabled={loginLoading}
         />
       </Grid>
       <Grid item style={gridItemStyle} xs={12}>
@@ -157,8 +169,12 @@ export default function Login (props) {
           color="primary"
           variant="contained"
           onClick={onLoginClick}
+          disabled={loginLoading}
         >
-          Login
+          {loginLoading ?
+          <ButtonProgress/> :
+          "Login"
+          }
         </Button>
       </Grid>
       {/* TODO: Could add nice lilttle divider, but would need to mess with CSS */}
@@ -171,6 +187,7 @@ export default function Login (props) {
           color="secondary"
           onClick={onRegisterClick}
           className={classes.registerButton}
+          disabled={loginLoading}
         >
           Register
         </Button>
