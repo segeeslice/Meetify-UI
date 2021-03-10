@@ -7,7 +7,7 @@
  * - onSendClick [Function] = method to call when the "send" button is clicked
  */
 
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useState, useRef } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import useAlert from '../../../hooks/useAlert'
 
@@ -31,11 +31,13 @@ const useStyles = makeStyles((theme) => ({
 
 export default function ChatInput (props) {
   const classes = useStyles()
+  const inputRef = useRef(null)
   const { addAlert } = useAlert()
 
   // NOTE: This may be causing too many re-renders? But unsure how to mitigate
   //       Doesn't appear to severely impact performance, given small component
-  const [text, setText] = useState()
+  const [text, setText] = useState('')
+  const [disabled, setDisabled] = useState(false)
 
   const {
     placeholder,
@@ -44,21 +46,44 @@ export default function ChatInput (props) {
 
   const onSendClick = useCallback((text) => {
     // TODO: Loading icons and things
+    setDisabled(true)
 
     // Send message to server
     sendMessage({userTo, text})
       .then(() => {
         setText('')
+
+        setDisabled(false)
+        inputRef.current.focus()
       })
       .catch((e) => {
         console.error(e)
+
         addAlert({
           type: 'snackbar',
           severity: 'error',
           text: 'Could not send message. Please try again.'
         })
+
+        setDisabled(false)
+        inputRef.current.focus()
       })
   }, [userTo, addAlert])
+
+  // Shift+Enter makes new line
+  // Enter sends message
+  const onChatKeypress = (e) => {
+    const enterPressed = e.keyCode === 13
+    const shiftHeld = e.shiftKey
+    if (enterPressed) {
+      if (!shiftHeld) onSendClick(text)
+      else setText(text + '\n')
+    }
+  }
+  const onChatChange = (e) => {
+    const newText = e.target.value
+    if (!newText.endsWith('\n')) setText(newText)
+  }
 
   return (
     <div className={classes.root}>
@@ -68,9 +93,12 @@ export default function ChatInput (props) {
         placeholder={placeholder || 'Message'}
         multiline
         value={text}
-        onChange={(e) => setText(e.target.value)}
         rowsMax={4}
         autoFocus
+        onChange={onChatChange}
+        onKeyDown={onChatKeypress}
+        disabled={disabled}
+        inputRef={inputRef}
       />
 
       {/* Wrap in div so button doesn't grow in height */}
