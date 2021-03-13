@@ -9,7 +9,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import useAlert from '../../hooks/useAlert'
 import { makeStyles } from '@material-ui/core/styles'
 
-import { setUsername, setSongs } from './intersectSlice'
+import { setIntersectUsername, setSongs } from './intersectSlice'
 import { getUserSongIntersection } from '../../server'
 
 import Button from '@material-ui/core/Button'
@@ -67,7 +67,7 @@ export default function Intersect (props) {
             label="Other User's Username"
             variant="outlined"
             value={username}
-            onChange={e => dispatch(setUsername(e.target.value))}
+            onChange={e => dispatch(setIntersectUsername(e.target.value))}
           />
         </Grid>
         <Grid item>

@@ -15,7 +15,7 @@ export const intersectSlice = createSlice({
     songs: [],
   },
   reducers: {
-    setUsername: (state, action) => {
+    setIntersectUsername: (state, action) => {
       state.username = action.payload
     },
     setSongs: (state, action) => {
@@ -27,5 +27,5 @@ export const intersectSlice = createSlice({
   }
 })
 
-export const { setUsername, setSongs, resetIntersectData } = intersectSlice.actions
+export const { setIntersectUsername, setSongs, resetIntersectData } = intersectSlice.actions
 export default intersectSlice.reducer
