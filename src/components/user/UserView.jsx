@@ -12,6 +12,8 @@
 import React, { useState, useEffect } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 
+import { setAsyncInterval, clearAsyncInterval } from '../../asyncInterval'
+
 import {
   AppBar,
   IconButton,
@@ -59,8 +61,6 @@ const useStyles = makeStyles((theme) => ({
     color: theme.palette.text.hint
   },
 }))
-
-let runInterval = false
 
 export default function UserView (props) {
   const classes = useStyles()
@@ -118,29 +118,12 @@ export default function UserView (props) {
   // Currently tied to matchId, but should always be tied to few parameters to
   // prevent repeated calls, especially avoiding parameters that refreshMethod
   // could change
-  //
-  // Utilizes setTimeout instead of setInterval to handle cases when server is slow
-  // (This also allows the first call to be instant!)
   useEffect(() => {
     if (refreshMethod) {
-      runInterval = true
-      let timeout = null
-
-      const intervalMethod = async () => {
-        if (!runInterval) return
-        refreshMethod({ matchId })
-          .then(() => {
-            timeout = setTimeout(intervalMethod, 1000)
-          })
-          .catch(() => {
-            clearTimeout(timeout)
-          })
-      }
-
-      intervalMethod()
+      const wrappedMethod = () => refreshMethod({ matchId })
+      const chatInterval = setAsyncInterval(wrappedMethod, 1000)
       return () => {
-        runInterval = false
-        clearTimeout(timeout)
+        clearAsyncInterval(chatInterval)
       }
     }
   }, [ refreshMethod, matchId ])
