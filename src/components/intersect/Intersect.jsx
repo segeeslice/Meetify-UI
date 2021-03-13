@@ -4,7 +4,7 @@
  * (NOTE: Currently just contains test data)
  */
 
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import useAlert from '../../hooks/useAlert'
 import { makeStyles } from '@material-ui/core/styles'
@@ -31,10 +31,13 @@ export default function Intersect (props) {
   const classes = useStyles()
   const dispatch = useDispatch()
   const { addAlert } = useAlert()
+  const textRef = useRef(null)
 
   const [loading, setLoading] = useState(false)
 
   // Use store primarily to maintain an internal "cache" when this gets unmounted
+  // TODO: Perhaps make this a useState and dispatch on submit, since it's a bit
+  //       laggy when typing fast
   const username = useSelector(state => state.intersect.username)
   const songs = useSelector(state => state.intersect.songs)
 
@@ -60,6 +63,14 @@ export default function Intersect (props) {
           text: 'Could not retrieve songs. Make sure the username is correct and try again!',
         })
       })
+      .finally(() => {
+        textRef.current.focus()
+      })
+  }
+
+  const onKeypress = (e) => {
+    const enterPressed = e.keyCode === 13
+    if (enterPressed) handleSubmit()
   }
 
   return (
@@ -76,6 +87,9 @@ export default function Intersect (props) {
             value={username}
             disabled={textDisabled}
             onChange={e => dispatch(setIntersectUsername(e.target.value))}
+            onKeyDown={onKeypress}
+            inputRef={textRef}
+            autoFocus
           />
         </Grid>
         <Grid item>
