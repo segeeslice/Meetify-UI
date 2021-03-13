@@ -4,7 +4,7 @@
  * (NOTE: Currently just contains test data)
  */
 
-import React from 'react'
+import React, { useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import useAlert from '../../hooks/useAlert'
 import { makeStyles } from '@material-ui/core/styles'
@@ -15,7 +15,9 @@ import { getUserSongIntersection } from '../../server'
 import Button from '@material-ui/core/Button'
 import TextField from '@material-ui/core/TextField'
 import Grid from '@material-ui/core/Grid'
-import SongTile from '../SongTile';
+
+import SongTile from '../SongTile'
+import ButtonProgress from '../ButtonProgress'
 
 const useStyles = makeStyles((theme) => ({
   songTile: {
@@ -30,22 +32,27 @@ export default function Intersect (props) {
   const dispatch = useDispatch()
   const { addAlert } = useAlert()
 
-  // Use state primarily to maintain an internal "cache" when this gets unmounted
+  const [loading, setLoading] = useState(false)
+
+  // Use store primarily to maintain an internal "cache" when this gets unmounted
   const username = useSelector(state => state.intersect.username)
   const songs = useSelector(state => state.intersect.songs)
 
-  const submitDisabled = !username
+  const submitDisabled = !username || loading
+  const textDisabled = loading
 
   const handleSubmit = () => {
     if (submitDisabled) return
 
     dispatch(setSongs([]))
-    // TODO: Reload animation on button
+    setLoading(true)
     getUserSongIntersection({ username })
       .then((songs) => {
+        setLoading(false)
         dispatch(setSongs(songs))
       })
       .catch((e) => {
+        setLoading(false)
         console.error(e)
         addAlert({
           type: 'snackbar',
@@ -67,6 +74,7 @@ export default function Intersect (props) {
             label="Other User's Username"
             variant="outlined"
             value={username}
+            disabled={textDisabled}
             onChange={e => dispatch(setIntersectUsername(e.target.value))}
           />
         </Grid>
@@ -78,7 +86,10 @@ export default function Intersect (props) {
             disabled={submitDisabled}
             onClick={() => handleSubmit()}
           >
-            Submit
+            { !loading ?
+              "Submit" :
+              <ButtonProgress/>
+            }
           </Button>
         </Grid>
       </Grid>
