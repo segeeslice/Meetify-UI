@@ -82,7 +82,12 @@ export default function ChatInput (props) {
   }
   const onChatChange = (e) => {
     const newText = e.target.value
-    if (!newText.endsWith('\n')) setText(newText)
+
+    // If we hit enter, let onChatKeypress handle the event
+    const textAdded = newText.length > text.length
+    const enterPressed = textAdded && newText.endsWith('\n')
+
+    if (!enterPressed) setText(newText)
   }
 
   return (
