@@ -21,6 +21,7 @@ import {
   login,
   getProfile,
   checkSpotifyLinked,
+  syncProfilePic,
 } from '../../server'
 import {
   setUsername,
@@ -58,29 +59,25 @@ export default function Login (props) {
   const [createDialogOpen, setCreateDialogOpen] = useState(false)
 
   const onLoginClick = async () => {
-    let retrievedUserId = null
-
     login({ username, password })
 
-       // Set basic account info in store
       .then(async ({ username, userId }) => {
-        retrievedUserId = userId
-
+       // Set basic account info in store
         dispatch(setUsername(username))
         dispatch(setUserId(userId))
 
-        return getProfile({ userId: retrievedUserId })
-      })
-
-      // Set profile info in store
-      .then(({ displayName, profilePicUrl, description }) => {
-        dispatch(setProfile({ displayName, profilePicUrl, description }))
-        return checkSpotifyLinked ({ userId: retrievedUserId })
-      })
-
-      // Check if Spotify account associated
-      .then(({ spotifyLinked }) => {
+        // We're now logged in; get any remaining related info
+        const { spotifyLinked } = await checkSpotifyLinked ({ userId })
         dispatch(setSpotifyLinked(spotifyLinked))
+
+        if (spotifyLinked) {
+          await syncProfilePic()
+        }
+
+        const profile = await getProfile({ userId })
+        dispatch(setProfile(profile))
+
+        return
       })
 
       // Trigger login animation chain

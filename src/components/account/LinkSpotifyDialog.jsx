@@ -11,10 +11,13 @@ import useAlert from '../../hooks/useAlert'
 import {
   linkSpotifyAccount,
   waitUntilSpotifyLinked,
+  syncProfilePic,
+  getProfile,
 } from '../../server'
 
 import {
   setSpotifyLinked,
+  setProfile,
 } from './accountSlice'
 
 import {
@@ -77,8 +80,27 @@ export default function LinkSpotifyDialog(props) {
   const onLinkButtonClick = () => {
     waitUntilSpotifyLinked.start({ userId })
       .then(({ spotifyLinked }) => {
-        console.log('success!')
         dispatch(setSpotifyLinked(spotifyLinked))
+        addAlert({
+          severity: 'success',
+          text: 'Your Spotify account has been linked! You can now use the Meetify services.',
+          type: 'snackbar',
+        })
+
+        // Attempt to update profile, but don't error entire process if not needed
+        return syncProfilePic()
+          .then(() => getProfile({ userId }))
+          .then((profile) => {
+            dispatch(setProfile(profile))
+          })
+          .catch((e) => {
+            console.error(e)
+            addAlert({
+              severity: 'warning',
+              text: 'Your Spotify account has been linked, but we could not retrieve your profile picture.',
+              type: 'snackbar',
+            })
+          })
       })
       .catch((e) => {
         console.error(e)

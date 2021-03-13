@@ -72,11 +72,6 @@ export default function VerticalTabBar (props) {
 
   const onLinkSpotifySuccess = () => {
     setLinkSpotifyDialogOpen(false)
-    addAlert({
-      severity: 'success',
-      text: 'Your Spotify account has been linked! You can now use the Meetify services.',
-      type: 'dialog',
-    })
   }
   const onLinkSpotifyCancel = () => {
     setLinkSpotifyDialogOpen(false)

@@ -34,7 +34,8 @@ const ENDPOINTS = {
   rejectMatch: ['matching', 'reject-match'],
   acceptMatch: ['matching', 'accept-match'],
   messages: ['chat', 'messages?match={match_id}'],
-  userSongIntersection: ['intersection', 'liked-songs']
+  userSongIntersection: ['intersection', 'liked-songs'],
+  syncProfilePic: ['user', 'update-profile-pic'],
 }
 
 // === INTERVAL(S) ===
@@ -108,7 +109,8 @@ export const login = async ({ username, email, password }) => {
         username: r.data.username,
         userId: r.data.id,
       }
-    }).catch((e) => {
+    })
+    .catch((e) => {
       throw e
     })
 }
@@ -430,6 +432,20 @@ export const getUserSongIntersection = ({ userId }) => {
       else if (!r.data)
         throw Error('Received no data from server')
       else return Object.keys(r.data).map(k => ({...r.data[k], songId: k}))
+    })
+    .catch((e) => {
+      throw e
+    })
+}
+
+export const syncProfilePic = () => {
+  const urlPath = joinUrl(SERVER_URL, ...ENDPOINTS.syncProfilePic)
+
+  return axios.get(urlPath)
+    .then((r) => {
+      if (r.status >= 300)
+        throw Error(`Received status ${r.status} from server`)
+      else return
     })
     .catch((e) => {
       throw e
