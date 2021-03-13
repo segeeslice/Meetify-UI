@@ -15,7 +15,9 @@ import {
   TextField,
   Typography,
 } from '@material-ui/core'
+
 import CreateAccountDialog from './CreateAccountDialog'
+import ButtonProgress from '../ButtonProgress'
 
 import {
   login,
@@ -45,6 +47,7 @@ const useStyles = makeStyles((theme) => ({
 export default function Login (props) {
   const classes = useStyles()
   const dispatch = useDispatch()
+  const passwordRef = useRef(null)
 
   const { addAlert } = useAlert()
 
@@ -56,9 +59,13 @@ export default function Login (props) {
   const [welcomeVisible, setWelcomeVisible] = useState(false)
   const [timeoutVar, setTimeoutVar] = useState(null)
 
+  const [loginLoading, setLoginLoading] = useState(false)
+
   const [createDialogOpen, setCreateDialogOpen] = useState(false)
 
-  const onLoginClick = async () => {
+  const onLoginClick = useCallback(async () => {
+    setLoginLoading(true)
+
     login({ username, password })
 
       .then(async ({ username, userId }) => {
@@ -81,7 +88,10 @@ export default function Login (props) {
       })
 
       // Trigger login animation chain
-      .then(() => setLoginVisible(false))
+      .then(() => {
+        setLoginLoading(false)
+        setLoginVisible(false)
+      })
 
       .catch((e) => {
         console.error(e)
@@ -89,8 +99,9 @@ export default function Login (props) {
                   type: 'snackbar',
                   severity: 'error'})
         setPassword('')
+        setLoginLoading(false)
       })
-  }
+  }, [dispatch, addAlert, password, username, setLoginLoading])
 
   // Login and welcome transition handling
   useEffect(() => {
@@ -121,6 +132,16 @@ export default function Login (props) {
     setCreateDialogOpen(false)
   }, [ addAlert, setCreateDialogOpen ])
 
+  const onPassKeypress = useCallback((e) => {
+    const enterPressed = e.keyCode === 13
+    if (enterPressed) onLoginClick()
+  }, [onLoginClick])
+
+  const onUsernameKeypress = useCallback((e) => {
+    const enterPressed = e.keyCode === 13
+    if (enterPressed) passwordRef.current.focus()
+  }, [passwordRef])
+
   // TODO: Move these to material-ui's makeStyle syntax
   const gridItemStyle = { textAlign: 'center', paddingBottom: '10px' }
 
@@ -140,15 +161,20 @@ export default function Login (props) {
           label="Username"
           value={username}
           onChange={(e) => dispatch(setUsername(e.target.value))}
+          onKeyDown={onUsernameKeypress}
+          disabled={loginLoading}
         />
       </Grid>
       <Grid item style={gridItemStyle} xs={12}>
         <TextField
           label="Password"
           type="password"
+          inputRef={passwordRef}
           autoComplete="current-password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          onKeyDown={onPassKeypress}
+          disabled={loginLoading}
         />
       </Grid>
       <Grid item style={gridItemStyle} xs={12}>
@@ -157,8 +183,12 @@ export default function Login (props) {
           color="primary"
           variant="contained"
           onClick={onLoginClick}
+          disabled={loginLoading}
         >
-          Login
+          {loginLoading ?
+          <ButtonProgress/> :
+          "Login"
+          }
         </Button>
       </Grid>
       {/* TODO: Could add nice lilttle divider, but would need to mess with CSS */}
@@ -171,6 +201,7 @@ export default function Login (props) {
           color="secondary"
           onClick={onRegisterClick}
           className={classes.registerButton}
+          disabled={loginLoading}
         >
           Register
         </Button>
