@@ -60,6 +60,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
+let runInterval = false
+
 export default function UserView (props) {
   const classes = useStyles()
 
@@ -121,9 +123,11 @@ export default function UserView (props) {
   // (This also allows the first call to be instant!)
   useEffect(() => {
     if (refreshMethod) {
+      runInterval = true
       let timeout = null
 
       const intervalMethod = async () => {
+        if (!runInterval) return
         refreshMethod({ matchId })
           .then(() => {
             timeout = setTimeout(intervalMethod, 1000)
@@ -134,7 +138,10 @@ export default function UserView (props) {
       }
 
       intervalMethod()
-      return () => clearTimeout(timeout)
+      return () => {
+        runInterval = false
+        clearTimeout(timeout)
+      }
     }
   }, [ refreshMethod, matchId ])
 
