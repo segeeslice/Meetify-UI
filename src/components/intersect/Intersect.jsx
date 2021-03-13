@@ -6,8 +6,11 @@
 
 import React from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { setUserId, importSongs } from './intersectSlice'
+import useAlert from '../../hooks/useAlert'
 import { makeStyles } from '@material-ui/core/styles'
+
+import { setUsername, setSongs } from './intersectSlice'
+import { getUserSongIntersection } from '../../server'
 
 import Button from '@material-ui/core/Button'
 import TextField from '@material-ui/core/TextField'
@@ -24,16 +27,32 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Intersect (props) {
   const classes = useStyles()
+  const dispatch = useDispatch()
+  const { addAlert } = useAlert()
 
   // Use state primarily to maintain an internal "cache" when this gets unmounted
-  const userId = useSelector(state => state.intersect.userId)
+  const username = useSelector(state => state.intersect.username)
   const songs = useSelector(state => state.intersect.songs)
-  const dispatch = useDispatch()
 
-  const loggedInUserId = useSelector(state => state.account.username)
+  const submitDisabled = !username
 
   const handleSubmit = () => {
-    dispatch(importSongs({user1: loggedInUserId, user2: userId}))
+    if (submitDisabled) return
+
+    dispatch(setSongs([]))
+    // TODO: Reload animation on button
+    getUserSongIntersection({ username })
+      .then((songs) => {
+        dispatch(setSongs(songs))
+      })
+      .catch((e) => {
+        console.error(e)
+        addAlert({
+          type: 'snackbar',
+          severity: 'error',
+          text: 'Could not retrieve songs. Make sure the username is correct and try again!',
+        })
+      })
   }
 
   return (
@@ -45,10 +64,10 @@ export default function Intersect (props) {
       >
         <Grid item>
           <TextField
-            label="Other User's ID"
+            label="Other User's Username"
             variant="outlined"
-            value={userId}
-            onChange={e => dispatch(setUserId(e.target.value))}
+            value={username}
+            onChange={e => dispatch(setUsername(e.target.value))}
           />
         </Grid>
         <Grid item>
@@ -56,6 +75,7 @@ export default function Intersect (props) {
             variant="contained"
             disableElevation
             color="primary"
+            disabled={submitDisabled}
             onClick={() => handleSubmit()}
           >
             Submit
