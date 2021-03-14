@@ -7,7 +7,6 @@
 import React, { useState, useRef } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import useAlert from '../../hooks/useAlert'
-import { makeStyles } from '@material-ui/core/styles'
 
 import { setIntersectUsername, setSongs } from './intersectSlice'
 import { getUserSongIntersection } from '../../server'
@@ -16,19 +15,10 @@ import Button from '@material-ui/core/Button'
 import TextField from '@material-ui/core/TextField'
 import Grid from '@material-ui/core/Grid'
 
-import SongTile from '../SongTile'
+import SongTileList from '../SongTileList'
 import ButtonProgress from '../ButtonProgress'
 
-const useStyles = makeStyles((theme) => ({
-  songTile: {
-    height: theme.tile.height,
-    width: '100%',
-    padding: '8px',
-  }
-}))
-
 export default function Intersect (props) {
-  const classes = useStyles()
   const dispatch = useDispatch()
   const { addAlert } = useAlert()
   const textRef = useRef(null)
@@ -36,8 +26,6 @@ export default function Intersect (props) {
   const [loading, setLoading] = useState(false)
 
   // Use store primarily to maintain an internal "cache" when this gets unmounted
-  // TODO: Perhaps make this a useState and dispatch on submit, since it's a bit
-  //       laggy when typing fast
   const username = useSelector(state => state.intersect.username)
   const songs = useSelector(state => state.intersect.songs)
 
@@ -111,16 +99,7 @@ export default function Intersect (props) {
       {/* TODO: Make scrollable, e.g.... */}
       {/* <div style={{ overflowY: 'auto', height: '200px' }}> */}
       <div>
-        {songs.map((row, index) => (
-          <div className={classes.songTile} key={index}>
-            <SongTile
-              song={row.song}
-              artist={row.artist}
-              /* album={row.album} */
-              albumArtUrl={row.albumArtUrl}
-            />
-          </div>
-        ))}
+        <SongTileList songs={songs}/>
       </div>
     </div>
   );
