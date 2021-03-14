@@ -28,7 +28,7 @@ import SongsIcon from '@material-ui/icons/LibraryMusic'
 
 import ChatView from './chat/ChatView'
 import Account from '../account/Account'
-import SongTile from '../SongTile'
+import SongTileList from '../SongTileList'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -46,11 +46,6 @@ const useStyles = makeStyles((theme) => ({
   appBar: {
     position: 'absolute',
     top: 0,
-  },
-  songTile: {
-    height: theme.tile.height,
-    width: '100%',
-    padding: '8px',
   },
   title: {
     flexGrow: 1,
@@ -91,15 +86,7 @@ export default function UserView (props) {
         No matching songs found
       </Typography>
       :
-      songs.map((row, index) => (
-        <div className={classes.songTile} key={index}>
-          <SongTile
-            song={row.song}
-            artist={row.artist}
-            albumArtUrl={row.albumArtUrl}
-          />
-        </div>
-      )),
+      <SongTileList songs={songs}/>
   }, {
     val: 'chat',
     icon: <ChatIcon/>,
