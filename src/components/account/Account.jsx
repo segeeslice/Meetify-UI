@@ -45,7 +45,10 @@ const BODY_GRADIENT = theme.getGradient([theme.palette.background.default, theme
 const useStyles = makeStyles((theme) => ({
   description: {
     whiteSpace: 'pre', // Allow new lines
-  }
+  },
+  hintText: {
+    color: theme.palette.text.hint
+  },
 }))
 
 // == TEMP TEST STUFF ==
@@ -153,8 +156,11 @@ export default function Account (props) {
           </Typography>
           <Typography
             variant="body1"
-            className={classes.description}
+            className={`${classes.description} ${!profile.description ? classes.hintText : ''}`}
           >
+            {
+              profile.description || '(no description)'
+            }
           </Typography>
         </Card>
       </Grid>
