@@ -14,6 +14,7 @@
 
 import React, { useCallback, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { makeStyles } from '@material-ui/core/styles'
 import useAlert from '../../hooks/useAlert'
 
 import { setProfile } from './accountSlice'
@@ -41,6 +42,15 @@ const MARGIN = '8px'
 const HEADER_GRADIENT = theme.getGradient([theme.palette.background.default, theme.palette.primary.dark])
 const BODY_GRADIENT = theme.getGradient([theme.palette.background.default, theme.palette.secondary.dark])
 
+const useStyles = makeStyles((theme) => ({
+  description: {
+    whiteSpace: 'pre', // Allow new lines
+  },
+  hintText: {
+    color: theme.palette.text.hint
+  },
+}))
+
 // == TEMP TEST STUFF ==
 
 const PROFILE_IMG_SIZE = theme.images.squareImageHeight
@@ -49,9 +59,11 @@ const PROFILE_IMG_SIZE = theme.images.squareImageHeight
 
 // TODO: Rename to Profile (account settings could & should be separate!)
 export default function Account (props) {
-  const userId = useSelector(state => state.account.userId)
+  const classes = useStyles()
   const dispatch = useDispatch()
   const { addAlert } = useAlert()
+
+  const userId = useSelector(state => state.account.userId)
 
   const {
     username,
@@ -142,8 +154,13 @@ export default function Account (props) {
           <Typography variant="h6">
             Personal Description
           </Typography>
-          <Typography variant="body1">
-            {profile.description}
+          <Typography
+            variant="body1"
+            className={`${classes.description} ${!profile.description ? classes.hintText : ''}`}
+          >
+            {
+              profile.description || '(no description)'
+            }
           </Typography>
         </Card>
       </Grid>
