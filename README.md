@@ -1,6 +1,6 @@
 # Meetify Front-end
 
-**Current version:** [0.2.0](https://github.com/segeeslice/Meetify-UI/releases/tag/v0.2.0)  
+**Current version:** [1.0.0](https://github.com/segeeslice/Meetify-UI/releases/tag/v1.0.0)  
 **[All releases](https://github.com/segeeslice/Meetify-UI/releases)**
 
 This repository contains all the code for the **front-end** application(s) for
