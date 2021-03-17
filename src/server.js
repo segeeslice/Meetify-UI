@@ -34,7 +34,10 @@ const ENDPOINTS = {
   rejectMatch: ['matching', 'reject-match'],
   acceptMatch: ['matching', 'accept-match'],
   messages: ['chat', 'messages?match={match_id}'],
-  userSongIntersection: ['intersection', 'liked-songs'],
+  userSongIntersection: {
+    byUserId: ['intersection', 'liked-songs'],
+    byUsername: ['intersection', 'liked-songs-by-username'],
+  },
   syncProfilePic: ['user', 'update-profile-pic'],
 }
 
@@ -419,11 +422,14 @@ export const acceptMatch = ({ matchId }) => {
     })
 }
 
-export const getUserSongIntersection = ({ userId }) => {
-  const urlPath = joinUrl(SERVER_URL, ...ENDPOINTS.userSongIntersection)
-  const dataToSend = {
+export const getUserSongIntersection = ({ userId, username }) => {
+  const endpointKey = userId != null ? 'byUserId' : 'byUsername'
+  const urlPath = joinUrl(SERVER_URL, ...ENDPOINTS.userSongIntersection[endpointKey])
+
+  const dataToSend = cleanEmptyKeys({
     'target_user_id': userId,
-  }
+    'target_username': username,
+  })
 
   return axios.post(urlPath, dataToSend)
     .then((r) => {
