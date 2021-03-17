@@ -1,23 +1,38 @@
 /*
  * UI component for the opening login screen w/ welcome animation
- * (NOTE: Currently just uses test data)
  */
 
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useCallback, } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { CSSTransition } from 'react-transition-group'
 import { makeStyles } from '@material-ui/core/styles'
 
+import useAlert from '../../hooks/useAlert'
+
 import {
   Button,
-  Divider,
   Grid,
   TextField,
   Typography,
 } from '@material-ui/core'
-import CreateAccountDialog from './CreateAccountDialog'
 
-import { login, setUsername } from './accountSlice'
+import CreateAccountDialog from './CreateAccountDialog'
+import ButtonProgress from '../ButtonProgress'
+
+import {
+  login,
+  getProfile,
+  checkSpotifyLinked,
+  syncProfilePic,
+} from '../../server'
+import {
+  setUsername,
+  setUserId,
+  setLoggedIn,
+  setProfile,
+  setSpotifyLinked,
+} from './accountSlice'
+
 import { theme } from '../../theme'
 
 const TRANSITION_DURATION = 500
@@ -32,47 +47,102 @@ const useStyles = makeStyles((theme) => ({
 export default function Login (props) {
   const classes = useStyles()
   const dispatch = useDispatch()
+  const passwordRef = useRef(null)
+
+  const { addAlert } = useAlert()
 
   const username = useSelector(state => state.account.username)
-
+  const displayName = useSelector(state => state.account.profile.displayName)
   const [password, setPassword] = useState('')
+
   const [loginVisible, setLoginVisible] = useState(true)
   const [welcomeVisible, setWelcomeVisible] = useState(false)
   const [timeoutVar, setTimeoutVar] = useState(null)
 
+  const [loginLoading, setLoginLoading] = useState(false)
+
   const [createDialogOpen, setCreateDialogOpen] = useState(false)
 
-  const onLoginClick = () => {
-    // TODO: (Eventually) Query against server and emit success then
+  const onLoginClick = useCallback(async () => {
+    setLoginLoading(true)
 
-    // Phase 1: Fade out login
-    setLoginVisible(false)
+    login({ username, password })
 
-    // Phase 2: Fade in welcome message
-    setWelcomeVisible(true)
+      .then(async ({ username, userId }) => {
+       // Set basic account info in store
+        dispatch(setUsername(username))
+        dispatch(setUserId(userId))
 
-    // Phase 3: Emit success event after slight delay
-    setTimeoutVar(setTimeout(() => {
-      dispatch(setUsername(username))
-      dispatch(login())
-      if (props.onSuccess) props.onSuccess()
-    }, TRANSITION_DURATION + WELCOME_DURATION))
-  }
+        // We're now logged in; get any remaining related info
+        const { spotifyLinked } = await checkSpotifyLinked ({ userId })
+        dispatch(setSpotifyLinked(spotifyLinked))
 
+        if (spotifyLinked) {
+          await syncProfilePic()
+        }
+
+        const profile = await getProfile({ userId })
+        dispatch(setProfile(profile))
+
+        return
+      })
+
+      // Trigger login animation chain
+      .then(() => {
+        setLoginLoading(false)
+        setLoginVisible(false)
+      })
+
+      .catch((e) => {
+        console.error(e)
+        addAlert({text: 'Invalid username or password',
+                  type: 'snackbar',
+                  severity: 'error'})
+        setPassword('')
+        setLoginLoading(false)
+      })
+  }, [dispatch, addAlert, password, username, setLoginLoading])
+
+  // Login and welcome transition handling
+  useEffect(() => {
+    if (loginVisible === false) setWelcomeVisible(true)
+  }, [loginVisible])
+  useEffect(() => {
+    if (welcomeVisible === true) {
+      setTimeoutVar(setTimeout(() => {
+        dispatch(setLoggedIn(true))
+      }, TRANSITION_DURATION + WELCOME_DURATION))
+    }
+  }, [welcomeVisible, dispatch])
+
+  // Cleanup timeout on destroy, just in case
   useEffect(() => {
     return function cleanup() {
-      clearTimeout(timeoutVar) // Just in case!
+      clearTimeout(timeoutVar)
     }
   })
 
-  const onRegisterClick = () => {
-    setCreateDialogOpen(true)
-  }
-
-  const onCreateAccountSubmit = (obj) => {
+  const onRegisterClick = () => setCreateDialogOpen(true)
+  const onRegisterSuccess = useCallback(() => {
+    addAlert({
+      text: 'Account successfully created!',
+      severity: 'success',
+      type: 'snackbar',
+    })
     setCreateDialogOpen(false)
-  }
+  }, [ addAlert, setCreateDialogOpen ])
 
+  const onPassKeypress = useCallback((e) => {
+    const enterPressed = e.keyCode === 13
+    if (enterPressed) onLoginClick()
+  }, [onLoginClick])
+
+  const onUsernameKeypress = useCallback((e) => {
+    const enterPressed = e.keyCode === 13
+    if (enterPressed) passwordRef.current.focus()
+  }, [passwordRef])
+
+  // TODO: Move these to material-ui's makeStyle syntax
   const gridItemStyle = { textAlign: 'center', paddingBottom: '10px' }
 
   // Login component, where user enters username and password
@@ -91,15 +161,20 @@ export default function Login (props) {
           label="Username"
           value={username}
           onChange={(e) => dispatch(setUsername(e.target.value))}
+          onKeyDown={onUsernameKeypress}
+          disabled={loginLoading}
         />
       </Grid>
       <Grid item style={gridItemStyle} xs={12}>
         <TextField
           label="Password"
           type="password"
+          inputRef={passwordRef}
           autoComplete="current-password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          onKeyDown={onPassKeypress}
+          disabled={loginLoading}
         />
       </Grid>
       <Grid item style={gridItemStyle} xs={12}>
@@ -108,8 +183,12 @@ export default function Login (props) {
           color="primary"
           variant="contained"
           onClick={onLoginClick}
+          disabled={loginLoading}
         >
-          Login
+          {loginLoading ?
+          <ButtonProgress/> :
+          "Login"
+          }
         </Button>
       </Grid>
       {/* TODO: Could add nice lilttle divider, but would need to mess with CSS */}
@@ -122,6 +201,7 @@ export default function Login (props) {
           color="secondary"
           onClick={onRegisterClick}
           className={classes.registerButton}
+          disabled={loginLoading}
         >
           Register
         </Button>
@@ -134,7 +214,7 @@ export default function Login (props) {
     <>
       <Grid item style={gridItemStyle}>
         <Typography variant='h3'>
-          Welcome, {username || 'user'}
+          Welcome, {displayName || username || 'user'}
         </Typography>
       </Grid>
     </>
@@ -189,10 +269,11 @@ export default function Login (props) {
           {welcomeComp}
         </Grid>
       </CSSTransition>
+
       <CreateAccountDialog
         open={createDialogOpen}
+        onSuccess={onRegisterSuccess}
         onCancel={() => setCreateDialogOpen(false)}
-        onSubmit={onCreateAccountSubmit}
       />
     </div>
   )

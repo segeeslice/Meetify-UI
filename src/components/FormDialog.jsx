@@ -55,6 +55,7 @@ export default function EditProfileDialog(props) {
     // Booleans
     open, // true if dialog should open (from Material-UI)
     submitButtonDisabled,
+    cancelButtonDisabled,
 
     // Method callbacks
     onClose,
@@ -88,6 +89,7 @@ export default function EditProfileDialog(props) {
         <Button
           onClick={() => onCancel && onCancel()}
           className={classes.cancelButton}
+          disabled={cancelButtonDisabled}
         >
           { cancelButtonText || 'Cancel' }
         </Button>

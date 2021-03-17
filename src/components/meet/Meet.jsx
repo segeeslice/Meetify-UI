@@ -5,10 +5,11 @@
 
 import React, { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { unwrapResult } from '@reduxjs/toolkit'
-import { findMatches, clearMatches } from './meetSlice'
-
+import useAlert from '../../hooks/useAlert'
 import { makeStyles } from '@material-ui/core/styles'
+
+import { clearMatches, setMatches } from './meetSlice'
+import { getPotentialMatches } from '../../server'
 
 import {
   Button,
@@ -50,8 +51,8 @@ const useStyles = makeStyles((theme) => ({
 export default function Meet () {
   const classes = useStyles()
   const dispatch = useDispatch()
+  const { addAlert } = useAlert()
   const matches = useSelector(state => state.meet.matches)
-  const currentUser = useSelector(state => state.account.username)
 
   const matchesPresent = matches && matches.length > 0
   const [showMatches, setShowMatches] = useState(matchesPresent)
@@ -62,40 +63,42 @@ export default function Meet () {
 
   let timeout = null
 
-  useEffect(() => (clearTimeout(timeout)))
+  useEffect(() => (() => { clearTimeout(timeout) }))
 
   function onRefreshClick () {
     // Change UI to indicate loading
     setButtonDisabled(true)
     setSearching(true)
 
-    // Find matches from server and handle accordingly
-    dispatch(findMatches({ username: currentUser }))
-      .then(unwrapResult)
-      .then(async (matches) => {
-        setSearching(false)
+    getPotentialMatches()
+      .then((matches) => {
+        dispatch(setMatches(matches))
 
-        if (matches && matches.length > 0) {
-          setSuccess(true)
+        // Success animation
+        setSuccess(true)
+        timeout = setTimeout(() => {
+          setShowMatches(true)
+          setSuccess(false)
+          setButtonDisabled(false)
+        }, 2000)
+      })
 
-          // Run success animation before showing matches
-          timeout = setTimeout(() => {
-            setShowMatches(true)
-            setSuccess(false)
-            setButtonDisabled(false)
-          }, 2000)
+      .catch ((e) => {
+        console.error(e)
+        addAlert({
+          type: 'snackbar',
+          severity: 'error',
+          text: 'Could not retrieve potential matches'
+        })
 
-        } else throw Error("No matches found.")
-
-      }).catch((err) => {
-        setSearching(false)
-        console.error("Error in finding matches", err)
-
-        // TODO: Display error alert with more details
         setShowMatches(false)
         setSuccess(false)
         setButtonDisabled(false)
         dispatch(clearMatches())
+      })
+
+      .finally(() => {
+        setSearching(false)
       })
   }
 
@@ -141,8 +144,8 @@ export default function Meet () {
       inMeetMode
       matches={matches}
       loading={searching}
-      onRefreshClick={onRefreshClick} // TODO
-      onCloseClick={() => {}}   // TODO
+      onRefreshClick={onRefreshClick}
+      onChange={() => onRefreshClick()}
     />
   )
   // TODO: Add fade animation between these, possibly put into generic component first

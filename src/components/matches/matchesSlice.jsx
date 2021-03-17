@@ -6,57 +6,7 @@
  * Sends to state.matches
  */
 
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-
-import { TEST_USERS } from '../meet/meetSlice'
-
-// Test messages
-const TEST_MESSAGES = [
-  {
-    sender: 'other', // Injected soon
-    date: new Date(Date.now() - 15000),
-    text: 'Hey!'
-  },
-  {
-    sender: 'me',
-    date: new Date(Date.now() - 10000),
-    text: 'Hey man what\'s up?',
-  },
-  {
-    sender: 'other',
-    date: new Date(Date.now() - 5000),
-    text: 'Please leave me alone I am sleepin',
-  },
-  {
-    sender: 'me',
-    date: new Date(Date.now() - 2000),
-    text: 'What?',
-  },
-  {
-    sender: 'other',
-    date: new Date(Date.now()),
-    text: 'I SAID I\'M NO LONGER INTERESTED. PLEASE STOP CONTACTING ME OR I WILL CONTACT ATTORNEY GENERAL. THZSKS',
-  },
-]
-
-// Pin messages to user chat objects
-const getTestChat = ({ userObj, me}) => {
-  const messages = [...TEST_MESSAGES].map(o => (
-    {...o, ...{ sender: o.sender === 'me' ? me : userObj.username }}
-  ))
-  return Object.assign({}, userObj, { messages })
-}
-
-const loadMatches = createAsyncThunk(
-  'matches/loadMatchesStatus',
-  async ({ username }, thunkAPI) => {
-    // For now, just return test data after a pause
-    return new Promise(resolve => setTimeout(() => {
-      const chatsWithSenders = [...TEST_USERS].map(userObj => getTestChat({ userObj, me: username}))
-      resolve(chatsWithSenders)
-    }, 2000))
-  }
-)
+import { createSlice } from '@reduxjs/toolkit'
 
 const matchesSlice = createSlice({
   name: 'matches',
@@ -71,15 +21,16 @@ const matchesSlice = createSlice({
     clearMatches: state => {
       state.matches = []
     },
-  },
-  extraReducers: {
-    // When findMatches succeeds, do this with the result...
-    [loadMatches.fulfilled]: (state, action) => {
-      state.matches = action.payload
+    setMessages: (state, action) => {
+      const { matchId, messages } = action.payload
+      state.matches = state.matches.map((m) => m.matchId !== matchId ? m : {...m, messages})
+    },
+    resetMatchesData: state => {
+      state.matches = []
     },
   }
 })
 
-export { matchesSlice, loadMatches }
-export const { setMatches, clearMatches } = matchesSlice.actions
+export { matchesSlice }
+export const { setMatches, clearMatches, setMessages, resetMatchesData } = matchesSlice.actions
 export default matchesSlice.reducer

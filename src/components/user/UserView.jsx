@@ -4,10 +4,15 @@
  * props:
  * - onCloseClick [function] = method to call when the "close" button is clicked
  * - user [obj] = user object, as formatted in store
+ * - refreshMethod [function] = method to call every second for refreshing this user's data
+ *     - Expected arguments: { matchId }
+ *     - Expected return: Promise
  */
 
 import React, { useState, useEffect } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
+
+import { setAsyncInterval, clearAsyncInterval } from '../../asyncInterval'
 
 import {
   AppBar,
@@ -25,7 +30,7 @@ import SongsIcon from '@material-ui/icons/LibraryMusic'
 
 import ChatView from './chat/ChatView'
 import Account from '../account/Account'
-import SongTile from '../SongTile'
+import SongTileList from '../SongTileList'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -44,13 +49,11 @@ const useStyles = makeStyles((theme) => ({
     position: 'absolute',
     top: 0,
   },
-  songTile: {
-    height: theme.tile.height,
-    width: '100%',
-    padding: '8px',
-  },
   title: {
     flexGrow: 1,
+  },
+  hintText: {
+    color: theme.palette.text.hint
   },
 }))
 
@@ -62,12 +65,14 @@ export default function UserView (props) {
     user,
     defaultTab,
     chatHidden,
+    refreshMethod,
   } = props
 
   const {
     songs,
     profile,
     username,
+    matchId,
   } = user
 
   const TABS_CONFIG = [{
@@ -77,16 +82,13 @@ export default function UserView (props) {
   }, {
     val: 'songs',
     icon: <SongsIcon/>,
-    component: songs.map((row, index) => (
-      <div className={classes.songTile} key={index}>
-        <SongTile
-          song={row.song}
-          artist={row.artist}
-      /* album={row.album} */
-          albumArtUrl={row.albumArtUrl}
-        />
-      </div>
-    )),
+    component: !songs || songs.length === 0
+      ?
+      <Typography variant="subtitle1" className={classes.hintText}>
+        No matching songs found
+      </Typography>
+      :
+      <SongTileList songs={songs}/>
   }, {
     val: 'chat',
     icon: <ChatIcon/>,
@@ -96,6 +98,22 @@ export default function UserView (props) {
       />
     ),
   }].filter(o => !(o.val === 'chat' && chatHidden))
+
+  // Call refreshMethod every second
+  // Allows any parent to consistently update data, as necessary
+  //
+  // Currently tied to matchId, but should always be tied to few parameters to
+  // prevent repeated calls, especially avoiding parameters that refreshMethod
+  // could change
+  useEffect(() => {
+    if (refreshMethod) {
+      const wrappedMethod = () => refreshMethod({ matchId })
+      const chatInterval = setAsyncInterval(wrappedMethod, 1000)
+      return () => {
+        clearAsyncInterval(chatInterval)
+      }
+    }
+  }, [ refreshMethod, matchId ])
 
   const DEFAULT_TAB_INDEX = (defaultTab && TABS_CONFIG.findIndex(o => o.val === defaultTab)) || 0
   const [activeTabIndex, setActiveTabIndex] = useState(DEFAULT_TAB_INDEX)

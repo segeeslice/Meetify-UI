@@ -13,8 +13,12 @@
  */
 
 import React, { useCallback, useState } from 'react'
-import { useDispatch } from 'react-redux'
-import { editProfile } from './accountSlice'
+import { useDispatch, useSelector } from 'react-redux'
+import { makeStyles } from '@material-ui/core/styles'
+import useAlert from '../../hooks/useAlert'
+
+import { setProfile } from './accountSlice'
+import { editProfile } from '../../server'
 
 import {
   Button,
@@ -38,6 +42,15 @@ const MARGIN = '8px'
 const HEADER_GRADIENT = theme.getGradient([theme.palette.background.default, theme.palette.primary.dark])
 const BODY_GRADIENT = theme.getGradient([theme.palette.background.default, theme.palette.secondary.dark])
 
+const useStyles = makeStyles((theme) => ({
+  description: {
+    whiteSpace: 'pre', // Allow new lines
+  },
+  hintText: {
+    color: theme.palette.text.hint
+  },
+}))
+
 // == TEMP TEST STUFF ==
 
 const PROFILE_IMG_SIZE = theme.images.squareImageHeight
@@ -46,7 +59,11 @@ const PROFILE_IMG_SIZE = theme.images.squareImageHeight
 
 // TODO: Rename to Profile (account settings could & should be separate!)
 export default function Account (props) {
+  const classes = useStyles()
   const dispatch = useDispatch()
+  const { addAlert } = useAlert()
+
+  const userId = useSelector(state => state.account.userId)
 
   const {
     username,
@@ -58,14 +75,28 @@ export default function Account (props) {
 
   const openEditDialog = useCallback(() => {
     setEditDialogOpen(true)
-  }, [setEditDialogOpen])
+  }, [])
   const onEditDialogCancel = useCallback(() => {
     setEditDialogOpen(false)
-  }, [setEditDialogOpen])
+  }, [])
   const onEditDialogSave = useCallback((changes) => {
-    dispatch(editProfile({ changes }))
-    setEditDialogOpen(false)
-  }, [dispatch, setEditDialogOpen])
+    editProfile({ userId, changes })
+      .then((profile) => dispatch(setProfile(profile)))
+      .then(() => setEditDialogOpen(false))
+      .then(() => addAlert({
+        text: 'Profile updated',
+        severity: 'success',
+        type: 'snackbar',
+      }))
+      .catch((e) => {
+        addAlert({
+          title: e.name,
+          text: e.message || 'Could not profile. Please try again.',
+          severity: 'error',
+          type: 'dialog',
+        })
+      })
+  }, [userId, dispatch, addAlert])
 
   const Header = (() => (
     <Card style={{width: '100%', background: HEADER_GRADIENT}}>
@@ -88,12 +119,6 @@ export default function Account (props) {
               {/* TODO: Handle very long display names? */}
               <Typography variant="h5">
                 {profile.displayName}
-              </Typography>
-              <Typography variant="subtitle1" style={{color: theme.palette.text.hint}}>
-                {username}
-              </Typography>
-              <Typography variant="subtitle1" style={{color: theme.palette.text.hint}}>
-                {profile.status}
               </Typography>
             </div>
             {editable &&
@@ -129,8 +154,13 @@ export default function Account (props) {
           <Typography variant="h6">
             Personal Description
           </Typography>
-          <Typography variant="body1">
-            {profile.description}
+          <Typography
+            variant="body1"
+            className={`${classes.description} ${!profile.description ? classes.hintText : ''}`}
+          >
+            {
+              profile.description || '(no description)'
+            }
           </Typography>
         </Card>
       </Grid>

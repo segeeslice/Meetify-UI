@@ -1,6 +1,6 @@
 {
   "name": "meetify",
-  "version": "0.2.0",
+  "version": "1.0.0",
   "description": "Application for meeting new people based on your music interests (via Spotify)",
   "author": "Dustin Seger",
   "private": true,
@@ -9,12 +9,14 @@
   "dependencies": {
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.11.2",
+    "@material-ui/lab": "^4.0.0-alpha.57",
     "@reduxjs/toolkit": "^1.5.0",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.5.0",
     "@testing-library/user-event": "^7.2.1",
     "axios": "^0.21.1",
     "electron-is-dev": "^1.2.0",
+    "jquery": "^3.5.1",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-redux": "^7.2.2",

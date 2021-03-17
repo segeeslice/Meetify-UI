@@ -4,11 +4,12 @@
 
 import React, { useState, useRef } from 'react'
 import { CSSTransition } from 'react-transition-group'
-import { Tab, Paper } from '@material-ui/core'
-import { ThemeProvider } from '@material-ui/core/styles'
 import { useSelector } from 'react-redux'
+import { makeStyles } from '@material-ui/core/styles'
 
-import VerticalTabBar from './VerticalTabBar'
+import { Tab, Paper } from '@material-ui/core'
+
+import AppTabBar from './AppTabBar'
 import Login from './account/Login'
 
 import Meet from './meet/Meet'
@@ -16,12 +17,21 @@ import Intersect from './intersect/Intersect'
 import Account from './account/Account'
 import Matches from './matches/Matches'
 
-import { theme } from '../theme'
 import './App.css'
 
 const TRANSITION_DURATION = 500
 
+const useStyles = makeStyles((theme) => ({
+  tabBar: {
+    float: 'left',
+    maxWidth: '25%',
+    height: '100%',
+  },
+}))
+
 export default function App () {
+  const classes = useStyles()
+
   const loggedIn = useSelector((state) => state.account.loggedIn)
   const username = useSelector((state) => state.account.username)
   const profile = useSelector((state) => state.account.profile)
@@ -64,9 +74,11 @@ export default function App () {
 
   const mainAppComp = (
     <>
-      <VerticalTabBar className="tab-bar" activeIndex={componentIndex}>
-        {tabs}
-      </VerticalTabBar>
+      <div className={classes.tabBar}>
+        <AppTabBar activeIndex={componentIndex}>
+          {tabs}
+        </AppTabBar>
+      </div>
       <div className="main-container">
         {component}
       </div>
@@ -77,37 +89,35 @@ export default function App () {
   const appRef = useRef(null)
 
   return (
-    <ThemeProvider theme={theme}>
-      <Paper className="app-root" square style={{position:'relative'}}>
-        {/* TODO: Try to make this into generic transition component */}
-        <CSSTransition
-          classNames="fade"
-          timeout={TRANSITION_DURATION}
-          unmountOnExit
-          style={{position: 'absolute', height: '100%', width: '100%'}}
-          nodeRef={loginRef}
-          in={!loggedIn}
-        >
-          <div ref={loginRef}>
-            <Login/>
-          </div>
-        </CSSTransition>
+    <Paper className="app-root" square style={{position:'relative'}}>
+      {/* TODO: Try to make this into generic transition component */}
+      <CSSTransition
+        classNames="fade"
+        timeout={TRANSITION_DURATION}
+        unmountOnExit
+        style={{position: 'absolute', height: '100%', width: '100%'}}
+        nodeRef={loginRef}
+      in={!loggedIn}
+      >
+        <div ref={loginRef}>
+          <Login/>
+        </div>
+      </CSSTransition>
 
-        <CSSTransition
-          classNames="fade"
-          timeout={TRANSITION_DURATION}
-          unmountOnExit
-          style={{position: 'absolute', height: '100%', width: '100%'}}
-          nodeRef={appRef}
-          in={loggedIn}
-        >
-          <div ref={appRef}>
-            <div style={{display: 'flex', height: '100%', width: '100%'}}>
-              {mainAppComp}
-            </div>
+      <CSSTransition
+        classNames="fade"
+        timeout={TRANSITION_DURATION}
+        unmountOnExit
+        style={{position: 'absolute', height: '100%', width: '100%'}}
+        nodeRef={appRef}
+      in={loggedIn}
+      >
+        <div ref={appRef}>
+          <div style={{display: 'flex', height: '100%', width: '100%'}}>
+            {mainAppComp}
           </div>
-        </CSSTransition>
-      </Paper>
-    </ThemeProvider>
+        </div>
+      </CSSTransition>
+    </Paper>
   );
 }

@@ -2,10 +2,10 @@ import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 
 import {
-  CircularProgress,
   IconButton,
 } from '@material-ui/core'
 import RefreshIcon from '@material-ui/icons/Refresh'
+import ButtonProgress from './ButtonProgress'
 
 // TODO: De-couple with each other, centering progress on button
 const useStyles = makeStyles((theme) => ({
@@ -22,11 +22,9 @@ export default function RefreshButton (props) {
   const { loading, ...buttonProps} = props
 
   const activeComp = (loading && (
-    <CircularProgress
-      className={classes.progress}
-      size={24}
-      thickness={4.6}
-    />
+    <div className={classes.progress}>
+      <ButtonProgress/>
+    </div>
   )) || (
     <IconButton
       aria-label="refresh"

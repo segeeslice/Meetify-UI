@@ -12,12 +12,15 @@
  * - No chat tab when viewing the user
  */
 
-import React, { useState } from 'react'
-// import { useSelector, useDispatch } from 'react-redux'
+import React, { useState, useCallback } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
+import useAlert from '../../hooks/useAlert'
+
+import { rejectMatch, acceptMatch } from '../../server'
 
 import {
   Grid,
+  Typography,
 } from '@material-ui/core'
 import ChatIcon from '@material-ui/icons/Chat'
 import PersonAddIcon from '@material-ui/icons/PersonAdd'
@@ -25,6 +28,7 @@ import PersonAddIcon from '@material-ui/icons/PersonAdd'
 import RefreshButton from '../RefreshButton'
 import UserTile from '../user/UserTile'
 import UserView from '../user/UserView'
+import MatchDismissDialog from './MatchDismissDialog'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -56,53 +60,143 @@ const useStyles = makeStyles((theme) => ({
     paddingRight: 50,
     position: 'relative',
   },
+  hintText: {
+    color: theme.palette.text.hint,
+    margin: theme.spacing(1),
+  },
 }))
 
 export default function MatchesView (props) {
   const classes = useStyles()
+  const { addAlert } = useAlert()
 
   const {
     inMeetMode,
     matches,
     onRefreshClick,
-    onCloseClick,
     loading,
+    refreshMethod,
+    useDismissWarningDialog,
+    onChange,
   } = props
 
-  const [ selectedUser, selectUser ] = useState(null)
   const [ selectedTab, selectTab ] = useState(null)
 
-  const onChatClick =({user}) => {
-    selectTab('chat')
-    selectUser(user)
-  }
-  const onAddClick = ({user}) => {
-    console.log('Adding!')
-  }
-  const onProfileClick =({user}) => {
-    selectTab('profile')
-    selectUser(user)
-  }
-  const onSongsClick = ({user}) => {
-    selectTab('songs')
-    selectUser(user)
-  }
-  const closeUserView = () => {
-    selectUser(null)
-  }
+  // Tie the selected user to an index to ensure reactivity if that item changes
+  const [ selectedUserIndex, selectUserIndex ] = useState(null)
+  const [ dismissDialogOpen, setDismissDialogOpen ] = useState(false)
+  const [ onDismissDialogSubmit, setOnDismissDialogSubmit ] = useState(null)
+  const selectedUser = selectedUserIndex != null ? matches[selectedUserIndex] : null
 
-  const userTiles = matches.map((user, i) => (
-    <UserTile
-      key={i}
-      className={classes.card}
-      user={user}
-      onActionClick={() => inMeetMode ? onAddClick({user}) : onChatClick({user})}
-      onProfileClick={() => onProfileClick({user})}
-      onCloseClick={() => onCloseClick && onCloseClick({user})}
-      onSongsClick={() => onSongsClick({user})}
-      actionButtonIcon={inMeetMode ? <PersonAddIcon/> : <ChatIcon/>}
-    />
-  ))
+  const onChatClick = useCallback((index) => {
+    selectTab('chat')
+    selectUserIndex(index)
+  }, [selectTab, selectUserIndex])
+
+  const onProfileClick = useCallback((index) => {
+    selectTab('profile')
+    selectUserIndex(index)
+  }, [selectTab, selectUserIndex])
+
+  const onSongsClick = useCallback((index) => {
+    selectTab('songs')
+    selectUserIndex(index)
+  }, [selectTab, selectUserIndex])
+
+  const closeUserView = useCallback(() => {
+    selectUserIndex(null)
+  }, [selectUserIndex])
+
+  const onAddClick = useCallback((user) => {
+    const {
+      matchId
+    } = user
+
+    acceptMatch({ matchId })
+      .then(() => {
+        addAlert({
+          type: 'snackbar',
+          severity: 'success',
+          text: 'Match accepted',
+        })
+        onChange && onChange()
+      })
+      .catch((e) => {
+        console.error(e)
+        addAlert({
+          type: 'snackbar',
+          severity: 'error',
+          text: 'Could not accept match',
+        })
+      })
+  }, [addAlert, onChange])
+
+  const onCloseClick = useCallback((user) => {
+    const {
+      matchId
+    } = user
+
+    const rejectMethod = () => {
+      rejectMatch({ matchId })
+        .then(() => {
+          addAlert({
+            type: 'snackbar',
+            severity: 'info',
+            text: 'Match dismissed',
+          })
+          onChange && onChange()
+        })
+        .catch((e) => {
+          console.error(e)
+          addAlert({
+            type: 'snackbar',
+            severity: 'error',
+            text: 'Could not dismiss match',
+          })
+        })
+    }
+
+    if (useDismissWarningDialog) {
+      setOnDismissDialogSubmit(() => () => {
+        rejectMethod()
+        setDismissDialogOpen(false)
+      })
+      setDismissDialogOpen(true)
+
+    } else {
+      rejectMethod()
+    }
+  }, [
+    setOnDismissDialogSubmit,
+    setDismissDialogOpen,
+    useDismissWarningDialog,
+    addAlert,
+    onChange,
+  ])
+
+  const onDismissDialogCancel = useCallback(() => {
+    setDismissDialogOpen(false)
+    setOnDismissDialogSubmit(null)
+  }, [setDismissDialogOpen, setOnDismissDialogSubmit])
+
+  const userTiles = !matches || matches.length === 0
+        ?
+        <Typography variant="h6" className={classes.hintText}>
+          No matches yet!
+        </Typography>
+        :
+        matches.map((user, i) => (
+          <UserTile
+            key={i}
+            className={classes.card}
+            user={user}
+            onActionClick={() => inMeetMode ? onAddClick(user) : onChatClick(i)}
+            onProfileClick={() => onProfileClick(i)}
+            onCloseClick={() => onCloseClick(user)}
+            onSongsClick={() => onSongsClick(i)}
+            actionButtonIcon={inMeetMode ? <PersonAddIcon/> : <ChatIcon/>}
+          />
+        ))
 
   const userView = (
     <div className={classes.userView}>
@@ -111,6 +205,7 @@ export default function MatchesView (props) {
         user={selectedUser}
         defaultTab={selectedTab}
         chatHidden={inMeetMode}
+        refreshMethod={refreshMethod}
       />
     </div>
   )
@@ -129,9 +224,16 @@ export default function MatchesView (props) {
   )
 
   return (
-    <div className={classes.root}>
-      { matchesView }
-      { selectedUser && userView }
-    </div>
+    <>
+      <div className={classes.root}>
+        { matchesView }
+        { selectedUser && userView }
+      </div>
+      <MatchDismissDialog
+        open={dismissDialogOpen}
+        onSubmit={() => onDismissDialogSubmit && onDismissDialogSubmit()}
+        onCancel={() => onDismissDialogCancel()}
+      />
+    </>
   )
 }
