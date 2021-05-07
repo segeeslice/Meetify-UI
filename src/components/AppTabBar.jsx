@@ -39,6 +39,7 @@ const useStyles = makeStyles((theme) => ({
   },
   divider: {
     borderColor: theme.palette.text.disabled,
+    backgroundColor: theme.palette.text.disabled,
   },
   logoutButton: {
     color: theme.palette.error.light
